@@ -1,4 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+/*@tailwind base;*/
+/*@tailwind components;*/
+@tailwind utilities;
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -180,7 +186,7 @@
 
 @layer base {
   * {
-   // @apply border-border;
+   /* border: 1px solid var(--border);*/
   }
 
   html {
