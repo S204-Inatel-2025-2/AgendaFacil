@@ -51,8 +51,7 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.8,
-        ease: [0.23, 1, 0.32, 1]
+        duration: 0.8
       }
     },
     exit: { 
@@ -60,8 +59,7 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
       y: -10,
       scale: 1.02,
       transition: {
-        duration: 0.6,
-        ease: [0.23, 1, 0.32, 1]
+        duration: 0.6
       }
     }
   };
@@ -78,8 +76,7 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
       scale: 1,
       transition: {
         duration: 0.8,
-        delay: 0.2,
-        ease: [0.23, 1, 0.32, 1]
+        delay: 0.2
       }
     }
   };

@@ -183,6 +183,26 @@ const translations = {
     edit: "Editar",
     delete: "Excluir",
     
+    // Login Page
+    back_to_home: "Voltar ao início",
+    login_title: "Entrar na sua conta",
+    login_subtitle: "Acesse seus agendamentos e serviços",
+    login_email: "E-mail",
+    login_email_placeholder: "Digite seu e-mail",
+    login_password: "Senha",
+    login_password_placeholder: "Digite sua senha",
+    login_forgot_password: "Esqueceu a senha?",
+    login_loading: "Entrando...",
+    login_submit: "Entrar",
+    login_social_divider: "ou continue com",
+    login_apple: "Continuar com Apple",
+    login_google: "Continuar com Google",
+    login_no_account: "Não tem uma conta?",
+    login_create_account: "Criar conta",
+    login_terms_text: "Ao continuar, você concorda com nossos",
+    login_terms: "Termos de Uso",
+    login_privacy: "Política de Privacidade",
+    
     // Time and Date
     monday: "Segunda",
     tuesday: "Terça",
