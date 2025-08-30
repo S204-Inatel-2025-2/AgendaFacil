@@ -12,8 +12,6 @@ import { TransparencySection } from './components/TransparencySection';
 import { TestimonialsSection } from './components/TestimonialsSection';
 import { Footer } from './components/Footer';
 import { FloatingButtons } from './components/FloatingButtons';
-import { LoginPage } from './components/LoginPage';
-import { RegisterPage } from './components/RegisterPage';
 
 // Apple-style Loading Component
 function AppleLoadingScreen() {
@@ -105,9 +103,9 @@ function ApplePageTransition({ children }: { children: React.ReactNode }) {
   );
 }
 
+
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register'>('home');
 
   useEffect(() => {
     // Apple-style loading duration
@@ -162,15 +160,12 @@ function AppContent() {
         {isLoading && <AppleLoadingScreen key="loading" />}
       </AnimatePresence>
 
-      <AnimatePresence mode="wait">
-        {!isLoading && currentPage === 'home' && (
+      <AnimatePresence>
+        {!isLoading && (
           <ApplePageTransition key="main">
             {/* Header with absolute positioning to not interfere with hero */}
             <div className="relative z-50">
-              <Header 
-                onLoginClick={() => setCurrentPage('login')}
-                onRegisterClick={() => setCurrentPage('register')}
-              />
+              <Header />
             </div>
             
             {/* Hero section - full screen without padding conflicts */}
@@ -252,26 +247,9 @@ function AppContent() {
             <FloatingButtons />
           </ApplePageTransition>
         )}
-
-         {!isLoading && currentPage === 'login' && (
-          <LoginPage 
-            key="login" 
-            onBack={() => setCurrentPage('home')}
-            onRegisterClick={() => setCurrentPage('register')}
-          />
-        )}
-
-        {!isLoading && currentPage === 'register' && (
-          <RegisterPage 
-            key="register" 
-            onBack={() => setCurrentPage('home')}
-            onLoginClick={() => setCurrentPage('login')}
-          />
-        )}
       </AnimatePresence>
 
-      {/* Apple-style scroll progress indicator - only show on home page */}
-      {currentPage === 'home' && (
+      {/* Apple-style scroll progress indicator */}
       <motion.div
         className="fixed top-0 left-0 w-full h-0.5 bg-primary z-50 origin-left"
         style={{
@@ -281,7 +259,6 @@ function AppContent() {
         }}
         initial={{ scaleX: 0 }}
       />
-      )}
     </div>
   );
 }
