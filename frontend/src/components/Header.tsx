@@ -5,7 +5,12 @@ import { Button } from './ui/button';
 import { useLanguage } from './LanguageProvider';
 import { useTheme } from './ThemeProvider';
 
-export function Header() {
+interface HeaderProps {
+  onLoginClick?: () => void;
+  onRegisterClick?: () => void;
+}
+
+export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useLanguage();
@@ -115,6 +120,7 @@ export function Header() {
                 variant="ghost"
                 size="sm"
                 className="text-muted-foreground hover:text-foreground"
+                onClick={onLoginClick}
               >
                 <User className="w-4 h-4 mr-2" />
                 {t.login}
@@ -128,6 +134,7 @@ export function Header() {
               <Button
                 size="sm"
                 className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={onRegisterClick}
               >
                 {t.register}
               </Button>
@@ -197,7 +204,10 @@ export function Header() {
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-muted-foreground"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onLoginClick?.();
+                    }}
                   >
                     <User className="w-4 h-4 mr-2" />
                     {t.login}
@@ -205,8 +215,11 @@ export function Header() {
                   
                   <Button
                     className="w-full bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onRegisterClick?.();
+                    }}                  
+                    >
                     {t.register}
                   </Button>
                 </div>
