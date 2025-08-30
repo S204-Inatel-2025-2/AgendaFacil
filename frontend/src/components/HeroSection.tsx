@@ -40,25 +40,25 @@ export function HeroSection() {
       title: t.service_medical,
       description: t.service_medical_desc,
       icon: '🏥',
-      gradient: 'from-blue-500 to-cyan-600'
+      gradient: 'from-green-500 to-emerald-600'
     },
     {
       title: t.service_beauty,
       description: t.service_beauty_desc,
       icon: '💅',
-      gradient: 'from-pink-500 to-rose-600'
+      gradient: 'from-green-500 to-emerald-600'
     },
     {
       title: t.service_technical,
       description: t.service_technical_desc,
       icon: '🔧',
-      gradient: 'from-orange-500 to-red-600'
+      gradient: 'from-green-500 to-emerald-600'
     },
     {
       title: t.service_education,
       description: t.service_education_desc,
       icon: '📚',
-      gradient: 'from-purple-500 to-indigo-600'
+      gradient: 'from-green-500 to-emerald-600'
     },
     {
       title: t.service_wellness,
@@ -70,7 +70,7 @@ export function HeroSection() {
       title: t.service_automotive,
       description: t.service_automotive_desc,
       icon: '🚗',
-      gradient: 'from-gray-500 to-slate-600'
+      gradient: 'from-green-500 to-emerald-600'
     }
   ];
 
