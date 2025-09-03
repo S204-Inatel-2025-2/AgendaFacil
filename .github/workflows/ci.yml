@@ -27,21 +27,25 @@ jobs:
       # ---------- FRONTEND ----------
       - name: Build imagem FRONTEND
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/frontend:${{ github.sha }} ./frontend
-          docker tag ghcr.io/${{ github.repository }}/frontend:${{ github.sha }} ghcr.io/${{ github.repository }}/frontend:latest
+          IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/frontend
+          docker build -t $IMAGE_NAME:${{ github.sha }} ./frontend
+          docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
 
       - name: Push imagem FRONTEND
         run: |
-          docker push ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
-          docker push ghcr.io/${{ github.repository }}/frontend:latest
+          IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/frontend
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
 
       # ---------- BACKEND ----------
       - name: Build imagem BACKEND
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/backend:${{ github.sha }} ./backend
-          docker tag ghcr.io/${{ github.repository }}/backend:${{ github.sha }} ghcr.io/${{ github.repository }}/backend:latest
+          IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/backend
+          docker build -t $IMAGE_NAME:${{ github.sha }} ./backend
+          docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
 
       - name: Push imagem BACKEND
         run: |
-          docker push ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
-          docker push ghcr.io/${{ github.repository }}/backend:latest
+          IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/backend
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
