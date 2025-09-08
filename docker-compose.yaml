@@ -1,4 +1,5 @@
 version: '3.9'
+
 services:
   db:
     image: postgres:15
@@ -12,6 +13,8 @@ services:
       - "5432:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_net
 
   pgadmin:
     image: dpage/pgadmin4
@@ -24,3 +27,35 @@ services:
       - "8080:80"
     depends_on:
       - db
+    networks:
+      - app_net
+
+  backend:
+    image: ghcr.io/s204-inatel-2025-2/agendafacil/backend:latest
+    container_name: agenda_backend
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/meu_banco
+      SPRING_DATASOURCE_USERNAME: usuario
+      SPRING_DATASOURCE_PASSWORD: senha
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - app_net
+
+  frontend:
+    image: ghcr.io/s204-inatel-2025-2/agendafacil/frontend:latest
+    container_name: agenda_frontend
+    restart: always
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge

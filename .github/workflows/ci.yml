@@ -27,25 +27,21 @@ jobs:
       # ---------- FRONTEND ----------
       - name: Build imagem FRONTEND
         run: |
-          IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/frontend
-          docker build -t $IMAGE_NAME:${{ github.sha }} ./frontend
-          docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
+          docker build -t ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ./frontend
+          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/frontend:latest
 
       - name: Push imagem FRONTEND
         run: |
-          IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/frontend
-          docker push $IMAGE_NAME:${{ github.sha }}
-          docker push $IMAGE_NAME:latest
+          docker push ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA}
+          docker push ghcr.io/${GITHUB_REPOSITORY,,}/frontend:latest
 
       # ---------- BACKEND ----------
-      - name: Build imagem BACKEND
+      - name: Build imagem BACKEND (Spring Boot)
         run: |
-          IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/backend
-          docker build -t $IMAGE_NAME:${{ github.sha }} ./backend
-          docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
+          docker build -t ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ./backend
+          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
 
       - name: Push imagem BACKEND
         run: |
-          IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/backend
-          docker push $IMAGE_NAME:${{ github.sha }}
-          docker push $IMAGE_NAME:latest
+          docker push ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA}
+          docker push ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
