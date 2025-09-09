@@ -150,7 +150,7 @@ export function Footer() {
               ))}
             </ul>
             
-            <h4 className="text-sm font-medium mb-3 text-foreground">{t.footer_follow || 'Siga-nos'}</h4>
+            {/*<h4 className="text-sm font-medium mb-3 text-foreground">{t.footer_follow || 'Siga-nos'}</h4>
             <div className="flex gap-2">
               <Button size="sm" variant="ghost" className="w-8 h-8 p-0 text-muted-foreground hover:bg-primary hover:text-primary-foreground">
                 <Facebook className="w-4 h-4" />
@@ -164,7 +164,7 @@ export function Footer() {
               <Button size="sm" variant="ghost" className="w-8 h-8 p-0 text-muted-foreground hover:bg-primary hover:text-primary-foreground">
                 <Youtube className="w-4 h-4" />
               </Button>
-            </div>
+            </div>*/}
           </div>
         </div>
         
