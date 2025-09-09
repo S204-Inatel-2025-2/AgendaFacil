@@ -5,11 +5,6 @@ import { LanguageProvider, useLanguage } from './components/LanguageProvider';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { QuickAccess } from './components/QuickAccess';
-import { ServicesByPersona } from './components/ServicesByPersona';
-import { NewsSection } from './components/NewsSection';
-import { AgendaSection } from './components/AgendaSection';
-import { TransparencySection } from './components/TransparencySection';
-import { TestimonialsSection } from './components/TestimonialsSection';
 import { Footer } from './components/Footer';
 import { FloatingButtons } from './components/FloatingButtons';
 import { LoginPage } from './components/LoginPage';
@@ -193,51 +188,7 @@ function AppContent() {
               >
                 <QuickAccess />
               </motion.div>
-              
-              <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-              >
-                <ServicesByPersona />
-              </motion.div>
-              
-              <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-              >
-                <NewsSection />
-              </motion.div>
-              
-              <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-              >
-                <AgendaSection />
-              </motion.div>
-              
-              <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-              >
-                <TransparencySection />
-              </motion.div>
-              
-              <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-              >
-                <TestimonialsSection />
-              </motion.div>
+          
             </main>
             
             <motion.div

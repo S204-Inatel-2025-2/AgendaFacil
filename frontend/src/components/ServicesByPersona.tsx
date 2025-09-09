@@ -16,12 +16,12 @@ export function ServicesByPersona() {
       image: "https://images.unsplash.com/photo-1631217873430-6eabf5ee1b0e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWRpY2FsJTIwY29uc3VsdGF0aW9uJTIwZG9jdG9yfGVufDF8fHx8MTc1NjE5NzE5MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       gradient: 'from-blue-500 to-cyan-600',
       services: [
-        { name: t.health_general, price: 'R$ 120', time: '30min', rating: '4.9' },
-        { name: t.health_dentist, price: 'R$ 200', time: '45min', rating: '4.8' },
-        { name: t.health_psychologist, price: 'R$ 150', time: '50min', rating: '4.9' },
-        { name: t.health_dermatologist, price: 'R$ 180', time: '40min', rating: '4.7' },
-        { name: t.health_gynecologist, price: 'R$ 160', time: '35min', rating: '4.8' },
-        { name: t.health_cardiologist, price: 'R$ 220', time: '45min', rating: '4.9' }
+        { name: t.health_general},
+        { name: t.health_dentist},
+        { name: t.health_psychologist},
+        { name: t.health_dermatologist},
+        { name: t.health_gynecologist},
+        { name: t.health_cardiologist}
       ]
     },
     {
@@ -30,12 +30,12 @@ export function ServicesByPersona() {
       image: "https://images.unsplash.com/photo-1626383126210-15c15e62d9ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiZWF1dHklMjBzYWxvbiUyMHNlcnZpY2VzfGVufDF8fHx8MTc1NjIxMjc4NXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       gradient: 'from-pink-500 to-rose-600',
       services: [
-        { name: t.beauty_haircut, price: 'R$ 50', time: '60min', rating: '4.8' },
-        { name: t.beauty_manicure, price: 'R$ 35', time: '45min', rating: '4.7' },
-        { name: t.beauty_massage, price: 'R$ 80', time: '90min', rating: '4.9' },
-        { name: t.beauty_facial, price: 'R$ 120', time: '75min', rating: '4.8' },
-        { name: t.beauty_eyebrows, price: 'R$ 40', time: '30min', rating: '4.7' },
-        { name: t.beauty_makeup, price: 'R$ 100', time: '45min', rating: '4.8' }
+        { name: t.beauty_haircut},
+        { name: t.beauty_manicure},
+        { name: t.beauty_massage},
+        { name: t.beauty_facial},
+        { name: t.beauty_eyebrows},
+        { name: t.beauty_makeup}
       ]
     },
     {
@@ -44,12 +44,12 @@ export function ServicesByPersona() {
       image: "https://images.unsplash.com/photo-1753964724380-2c5ae02512a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobmljYWwlMjByZXBhaXIlMjBzZXJ2aWNlfGVufDF8fHx8MTc1NjIyNDQ1N3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       gradient: 'from-orange-500 to-red-600',
       services: [
-        { name: t.tech_computer, price: 'R$ 80', time: '60min', rating: '4.6' },
-        { name: t.tech_phone, price: 'R$ 60', time: '30min', rating: '4.7' },
-        { name: t.tech_appliances, price: 'R$ 100', time: '90min', rating: '4.5' },
-        { name: t.tech_plumbing, price: 'R$ 120', time: '120min', rating: '4.8' },
-        { name: t.tech_electrical, price: 'R$ 90', time: '75min', rating: '4.7' },
-        { name: t.tech_air_conditioning, price: 'R$ 150', time: '90min', rating: '4.6' }
+        { name: t.tech_computer},
+        { name: t.tech_phone},
+        { name: t.tech_appliances},
+        { name: t.tech_plumbing},
+        { name: t.tech_electrical},
+        { name: t.tech_air_conditioning}
       ]
     },
     {
@@ -58,12 +58,12 @@ export function ServicesByPersona() {
       image: "https://images.unsplash.com/photo-1660128359777-c7e5f29e4106?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcml2YXRlJTIwdHV0b3IlMjBlZHVjYXRpb258ZW58MXx8fHwxNzU2MjI0NDYxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       gradient: 'from-purple-500 to-indigo-600',
       services: [
-        { name: t.edu_math, price: 'R$ 60', time: '60min', rating: '4.9' },
-        { name: t.edu_portuguese, price: 'R$ 55', time: '60min', rating: '4.8' },
-        { name: t.edu_english, price: 'R$ 70', time: '60min', rating: '4.9' },
-        { name: t.edu_physics, price: 'R$ 65', time: '60min', rating: '4.7' },
-        { name: t.edu_chemistry, price: 'R$ 65', time: '60min', rating: '4.8' },
-        { name: t.edu_music, price: 'R$ 80', time: '45min', rating: '4.9' }
+        { name: t.edu_math},
+        { name: t.edu_portuguese},
+        { name: t.edu_english},
+        { name: t.edu_physics},
+        { name: t.edu_chemistry},
+        { name: t.edu_music}
       ]
     }
   ];

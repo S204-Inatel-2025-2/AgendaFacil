@@ -97,33 +97,6 @@ const translations = {
     edu_chemistry: "Química",
     edu_music: "Música",
     
-    // News Section
-    news_title: "Novidades",
-    news_subtitle: "Fique por dentro das últimas atualizações",
-    news_1_title: "Novos profissionais na plataforma",
-    news_1_excerpt: "Mais de 500 novos prestadores de serviço se cadastraram este mês",
-    news_2_title: "App móvel disponível",
-    news_2_excerpt: "Baixe nosso aplicativo e agende serviços pelo seu smartphone",
-    news_3_title: "Sistema de avaliações atualizado",
-    news_3_excerpt: "Nova interface para avaliar e comentar sobre os serviços",
-    
-    // Agenda Section
-    agenda_title: "Agenda Inteligente",
-    agenda_subtitle: "Visualize e gerencie seus agendamentos",
-    agenda_today: "Hoje",
-    agenda_week: "Semana",
-    agenda_month: "Mês",
-    agenda_no_appointments: "Nenhum agendamento para hoje",
-    agenda_book_service: "Agendar Serviço",
-    
-    // Transparency/Reviews Section
-    reviews_title: "Avaliações e Transparência",
-    reviews_subtitle: "Veja o que nossos usuários estão dizendo",
-    reviews_average: "Avaliação Média",
-    reviews_total: "Total de Avaliações",
-    reviews_5_star: "5 Estrelas",
-    reviews_4_star: "4 Estrelas",
-    
     // Testimonials
     testimonials_title: "Depoimentos",
     testimonials_subtitle: "Experiências reais de nossos usuários",
