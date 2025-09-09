@@ -139,7 +139,7 @@ export function QuickAccess() {
         </div>
 
         {/* Stats Section */}
-        <motion.div
+        {/*<motion.div
           className="bg-gradient-to-r from-primary/5 to-emerald-600/5 rounded-3xl p-8 lg:p-12 border border-primary/10"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -180,10 +180,10 @@ export function QuickAccess() {
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </motion.div>*/}
 
         {/* CTA Section */}
-        <motion.div
+        {/*<motion.div
           className="text-center mt-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -197,7 +197,7 @@ export function QuickAccess() {
             <Calendar className="w-5 h-5 mr-2" />
             {t.get_started}
           </Button>
-        </motion.div>
+        </motion.div>*/}
       </div>
     </section>
   );

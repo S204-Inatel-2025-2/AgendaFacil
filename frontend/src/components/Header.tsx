@@ -92,7 +92,7 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <Search className="w-4 h-4" />
               </Button>
@@ -105,7 +105,7 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-foreground relative"
+                className="text-muted-foreground hover:text-foreground relative cursor-pointer"
               >
                 <Bell className="w-4 h-4" />
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
@@ -119,7 +119,7 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
                 onClick={onLoginClick}
               >
                 <User className="w-4 h-4 mr-2" />
@@ -133,7 +133,7 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
             >
               <Button
                 size="sm"
-                className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
                 onClick={onRegisterClick}
               >
                 {t.register}
@@ -203,7 +203,7 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
                 <div className="pt-4 border-t border-border space-y-3">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-muted-foreground"
+                    className="w-full justify-start text-muted-foreground cursor-pointer"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       onLoginClick?.();
@@ -214,7 +214,7 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
                   </Button>
                   
                   <Button
-                    className="w-full bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0"
+                    className="w-full bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 cursor-pointer"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       onRegisterClick?.();
