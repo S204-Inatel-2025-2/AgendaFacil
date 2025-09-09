@@ -112,7 +112,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
           >
             {/* Badge */}
-            <motion.div
+            {/*<motion.div
               className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -120,7 +120,7 @@ export function HeroSection() {
             >
               <Clock className="w-4 h-4 mr-2" />
               Agendamento 24/7 disponível
-            </motion.div>
+            </motion.div>*/}
 
             {/* Main Heading */}
             <motion.div
