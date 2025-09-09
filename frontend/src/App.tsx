@@ -6,7 +6,7 @@ import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { QuickAccess } from './components/QuickAccess';
 import { Footer } from './components/Footer';
-import { FloatingButtons } from './components/FloatingButtons';
+//import { FloatingButtons } from './components/FloatingButtons';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
 
@@ -200,7 +200,7 @@ function AppContent() {
               <Footer />
             </motion.div>
             
-            <FloatingButtons />
+            {/*<FloatingButtons />*/}
           </ApplePageTransition>
         )}
 
