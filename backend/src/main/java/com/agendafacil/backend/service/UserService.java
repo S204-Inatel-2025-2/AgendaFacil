@@ -26,10 +26,17 @@ public class UserService {
 
     public User login(String email, String senha) throws Exception{
         Optional<User> userOpt = userRepository.findByEmail(email);
+        System.out.println("Email do usuário: " + userOpt.get().getEmail());
+        System.out.println("Email enviado: " + email);
+        System.out.println("Senha do usuário: " + userOpt.get().getSenha());
+        System.out.println("Senha enviada: " + senha);
+
+        System.out.println("Usuário encontrado: " + userOpt);
         if (userOpt.isEmpty() || !userOpt.get().getSenha().equals(senha)){
             //throw new Exception("Email ou senha inválidos");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou senha inválidos");
         }
+        
         return userOpt.get();
     }
 

@@ -24,7 +24,7 @@ public class UserController {
 
     @PostMapping("/login")
     public User login(@RequestBody LoginDTO loginDTO) throws Exception {
-        return userService.login(loginDTO.getEmail(),loginDTO.getPassword());
+        return userService.login(loginDTO.getEmail(),loginDTO.getSenha());
     }
 
     @GetMapping("/users")
