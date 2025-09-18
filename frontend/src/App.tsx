@@ -6,9 +6,12 @@ import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { QuickAccess } from './components/QuickAccess';
 import { Footer } from './components/Footer';
-//import { FloatingButtons } from './components/FloatingButtons';
+import { FloatingButtons } from './components/FloatingButtons';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
+import { ServiceDetailPage } from './components/ServiceDetailPage';
+import { serviceCategories } from './components/ServiceData';
+import { ServiceCategoryPage } from './components/ServiceCategoryPage';
 
 // Apple-style Loading Component
 function AppleLoadingScreen() {
@@ -102,7 +105,19 @@ function ApplePageTransition({ children }: { children: React.ReactNode }) {
 
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register'>('home');
+const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail'>('home');
+  const [currentServiceCategory, setCurrentServiceCategory] = useState<string | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<any>(null);
+
+  const handleServiceCategoryClick = (categoryKey: string) => {
+    setCurrentServiceCategory(categoryKey);
+    setCurrentPage('service-category');
+  };
+
+  const handleCompanySelect = (company: any) => {
+    setSelectedCompany(company);
+    setCurrentPage('service-detail');
+  };
 
   useEffect(() => {
     // Apple-style loading duration
@@ -174,7 +189,7 @@ function AppContent() {
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
             >
-              <HeroSection />
+              <HeroSection onServiceClick={handleServiceCategoryClick} />
             </motion.div>
             
             {/* Main content sections */}
@@ -200,7 +215,7 @@ function AppContent() {
               <Footer />
             </motion.div>
             
-            {/*<FloatingButtons />*/}
+            <FloatingButtons />
           </ApplePageTransition>
         )}
 
@@ -217,6 +232,30 @@ function AppContent() {
             key="register" 
             onBack={() => setCurrentPage('home')}
             onLoginClick={() => setCurrentPage('login')}
+          />
+        )}
+
+         {!isLoading && currentPage === 'service-category' && currentServiceCategory && (
+          <ServiceCategoryPage
+            key={`category-${currentServiceCategory}`}
+            onBack={() => setCurrentPage('home')}
+            onCompanySelect={handleCompanySelect}
+            categoryKey={currentServiceCategory}
+            title={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].title}
+            description={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].description}
+            icon={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].icon}
+            gradient={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].gradient}
+            companies={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].companies}
+          />
+        )}
+
+        {!isLoading && currentPage === 'service-detail' && selectedCompany && currentServiceCategory && (
+          <ServiceDetailPage
+            key={`detail-${selectedCompany.id}`}
+            onBack={() => setCurrentPage('service-category')}
+            company={selectedCompany}
+            categoryTitle={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].title}
+            gradient={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].gradient}
           />
         )}
       </AnimatePresence>
