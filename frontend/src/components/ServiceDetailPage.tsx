@@ -87,6 +87,7 @@ export function ServiceDetailPage({
     const today = new Date();
     
     // Generate slots for next 7 days
+    // essa parte vai ser o prestador quem vai configurar
     for (let day = 0; day < 7; day++) {
       const date = new Date(today);
       date.setDate(today.getDate() + day);
@@ -189,6 +190,7 @@ export function ServiceDetailPage({
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              
               <Button
                 variant="ghost"
                 size="sm"
@@ -270,15 +272,7 @@ export function ServiceDetailPage({
             <div className="flex flex-col gap-3">
               <Button
                 size="lg"
-                className="bg-white text-foreground hover:bg-white/90 shadow-lg min-w-[160px]"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Agendar Agora
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white/30 text-white hover:bg-white/10 min-w-[160px]"
+                className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover: cursor pointer"
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 Conversar
@@ -289,7 +283,7 @@ export function ServiceDetailPage({
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className=" container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-3 lg:w-[300px] mb-8">
             <TabsTrigger value="overview">Visão Geral</TabsTrigger>

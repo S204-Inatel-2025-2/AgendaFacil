@@ -105,7 +105,7 @@ function ApplePageTransition({ children }: { children: React.ReactNode }) {
 
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
-const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail'>('home');
   const [currentServiceCategory, setCurrentServiceCategory] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
 
@@ -134,7 +134,7 @@ const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | '
     
     // Preload critical images
     const imagesToPreload = [
-      'https://images.unsplash.com/photo-1555212697-194d092e3b8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
+      'https://unsplash.com/pt-br/fotografias/uma-foto-desfocada-de-um-fundo-azul-claro-XSL3nmNMl5Ilib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
     ];
     
     imagesToPreload.forEach(src => {
@@ -215,7 +215,7 @@ const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | '
               <Footer />
             </motion.div>
             
-            <FloatingButtons />
+            <FloatingButtons/>
           </ApplePageTransition>
         )}
 

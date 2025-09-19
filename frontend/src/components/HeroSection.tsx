@@ -156,7 +156,7 @@ export function HeroSection({ onServiceClick }: HeroSectionProps) {
             >
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover: cursor pointer"
               >
                 <Calendar className="w-5 h-5 mr-2" />
                 {t.hero_cta_primary}
