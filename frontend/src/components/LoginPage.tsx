@@ -7,6 +7,8 @@ import { Label } from './ui/label';
 import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import { useLanguage } from './LanguageProvider';
+import { useAuth } from '../hooks/useAuth';
+import toast from 'react-hot-toast';
 
 interface LoginPageProps {
   onBack: () => void;
@@ -15,22 +17,37 @@ interface LoginPageProps {
 
 export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
   const { t } = useLanguage();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    senha: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    console.log('Login attempt:', formData);
-    setIsLoading(false);
+    try {
+      const success = await login(formData.email, formData.senha);
+      
+      if (success) {
+        toast.success('🎉 Login realizado com sucesso! Bem-vindo de volta!');
+        console.log('Login realizado com sucesso!');
+        onBack(); // Volta para a página principal
+      } else {
+        setError('Email ou senha inválidos');
+        toast.error('❌ Email ou senha inválidos. Tente novamente.');
+      }
+    } catch (err) {
+      setError('Erro inesperado. Tente novamente.');
+      console.error('Erro no login:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -38,6 +55,8 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
       ...prev,
       [field]: value
     }));
+    // Limpar erro quando o usuário começar a digitar
+    if (error) setError(null);
   };
 
   const pageVariants = {
@@ -179,6 +198,17 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
                 </motion.p>
               </div>
 
+              {/* Error message */}
+              {error && (
+                <motion.div
+                  className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {error}
+                </motion.div>
+              )}
+
               {/* Login form */}
               <motion.form
                 onSubmit={handleSubmit}
@@ -208,17 +238,17 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
 
                 {/* Password field */}
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
+                  <Label htmlFor="senha" className="text-sm font-medium">
                     {t.login_password}
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                      id="password"
+                      id="senha"
                       type={showPassword ? 'text' : 'password'}
                       placeholder={t.login_password_placeholder}
-                      value={formData.password}
-                      onChange={(e) => handleInputChange('password', e.target.value)}
+                      value={formData.senha}
+                      onChange={(e) => handleInputChange('senha', e.target.value)}
                       className="pl-10 pr-12 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
                       required
                     />

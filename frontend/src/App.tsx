@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './components/ThemeProvider';
 import { LanguageProvider, useLanguage } from './components/LanguageProvider';
 import { Header } from './components/Header';
@@ -9,6 +10,7 @@ import { Footer } from './components/Footer';
 import { FloatingButtons } from './components/FloatingButtons';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
+import { AuthProvider } from './hooks/useAuth';
 import { ServiceDetailPage } from './components/ServiceDetailPage';
 import { serviceCategories } from './components/ServiceData';
 import { ServiceCategoryPage } from './components/ServiceCategoryPage';
@@ -272,16 +274,43 @@ function AppContent() {
         initial={{ scaleX: 0 }}
       />
       )}
+      
+      {/* Toast notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 2000,
+          style: {
+            background: 'hsl(var(--background))',
+            color: 'hsl(var(--foreground))',
+            border: '1px solid hsl(var(--border))',
+          },
+          success: {
+            iconTheme: {
+              primary: 'hsl(var(--primary))',
+              secondary: 'white',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: 'white',
+            },
+          },
+        }}
+      />
     </div>
   );
 }
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <LanguageProvider>
-        <AppContent />
-      </LanguageProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <AppContent />
+        </LanguageProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
