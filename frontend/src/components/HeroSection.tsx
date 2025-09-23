@@ -5,7 +5,11 @@ import { Card } from './ui/card';
 import { useLanguage } from './LanguageProvider';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
-export function HeroSection() {
+interface HeroSectionProps {
+  onServiceClick?: (categoryKey: string) => void;
+}
+
+export function HeroSection({ onServiceClick }: HeroSectionProps) {
   const { t } = useLanguage();
 
   const stats = [
@@ -40,37 +44,43 @@ export function HeroSection() {
       title: t.service_medical,
       description: t.service_medical_desc,
       icon: '🏥',
-      gradient: 'from-green-500 to-emerald-600'
+      gradient: 'from-green-500 to-emerald-600',
+      categoryKey: 'medical'
     },
     {
       title: t.service_beauty,
       description: t.service_beauty_desc,
       icon: '💅',
-      gradient: 'from-green-500 to-emerald-600'
+      gradient: 'from-green-500 to-emerald-600',
+      categoryKey: 'beauty'
     },
     {
       title: t.service_technical,
       description: t.service_technical_desc,
       icon: '🔧',
-      gradient: 'from-green-500 to-emerald-600'
+      gradient: 'from-green-500 to-emerald-600',
+      categoryKey: 'technical'
     },
     {
       title: t.service_education,
       description: t.service_education_desc,
       icon: '📚',
-      gradient: 'from-green-500 to-emerald-600'
+      gradient: 'from-green-500 to-emerald-600',
+      categoryKey: 'education'
     },
     {
       title: t.service_wellness,
       description: t.service_wellness_desc,
       icon: '🧘',
-      gradient: 'from-green-500 to-emerald-600'
+      gradient: 'from-green-500 to-emerald-600',
+      categoryKey: 'wellness'
     },
     {
       title: t.service_automotive,
       description: t.service_automotive_desc,
       icon: '🚗',
-      gradient: 'from-green-500 to-emerald-600'
+      gradient: 'from-green-500 to-emerald-600',
+      categoryKey: 'automotive'
     }
   ];
 
@@ -112,7 +122,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
           >
             {/* Badge */}
-            {/*<motion.div
+            <motion.div
               className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -120,7 +130,7 @@ export function HeroSection() {
             >
               <Clock className="w-4 h-4 mr-2" />
               Agendamento 24/7 disponível
-            </motion.div>*/}
+            </motion.div>
 
             {/* Main Heading */}
             <motion.div
@@ -146,7 +156,7 @@ export function HeroSection() {
             >
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover: cursor pointer"
               >
                 <Calendar className="w-5 h-5 mr-2" />
                 {t.hero_cta_primary}
@@ -219,7 +229,10 @@ export function HeroSection() {
                     transition: { duration: 0.2 }
                   }}
                 >
-                  <Card className="relative h-40 p-4 bg-background/80 backdrop-blur-sm border-border hover:border-primary/50 transition-all duration-300 overflow-hidden group cursor-pointer">
+                  <Card 
+                    className="relative h-40 p-4 bg-background/80 backdrop-blur-sm border-border hover:border-primary/50 transition-all duration-300 overflow-hidden group cursor-pointer"
+                    onClick={() => onServiceClick?.(service.categoryKey)}
+                  >
                     {/* Background Gradient */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                     

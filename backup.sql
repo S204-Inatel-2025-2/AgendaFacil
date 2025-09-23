@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict bov5QdpGTD9hIlfaQxOHdepmTSofYfsW0k03wt5ZOdnBV6arvUgE0jsUgNNtZ0m
+\restrict 5PaEBrA9YeztkOJMGY6hKUsBGAmmF5QHTx9AotqFIOeKGof8W6p4pSBCyFwuCOQ
 
 -- Dumped from database version 15.14 (Debian 15.14-1.pgdg13+1)
 -- Dumped by pg_dump version 15.14 (Debian 15.14-1.pgdg13+1)
@@ -23,6 +23,44 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: servicos; Type: TABLE; Schema: public; Owner: usuario
+--
+
+CREATE TABLE public.servicos (
+    id integer NOT NULL,
+    nome character varying(150) NOT NULL,
+    categoria character varying(100) NOT NULL,
+    descricao text NOT NULL,
+    duracao_minutos integer NOT NULL,
+    preco numeric(10,2) NOT NULL
+);
+
+
+ALTER TABLE public.servicos OWNER TO usuario;
+
+--
+-- Name: servicos_id_seq; Type: SEQUENCE; Schema: public; Owner: usuario
+--
+
+CREATE SEQUENCE public.servicos_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.servicos_id_seq OWNER TO usuario;
+
+--
+-- Name: servicos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: usuario
+--
+
+ALTER SEQUENCE public.servicos_id_seq OWNED BY public.servicos.id;
+
+
+--
 -- Name: usuarios; Type: TABLE; Schema: public; Owner: usuario
 --
 
@@ -31,7 +69,8 @@ CREATE TABLE public.usuarios (
     nome_completo character varying(100) NOT NULL,
     email character varying(100) NOT NULL,
     telefone character varying(20),
-    senha character varying(255) NOT NULL
+    senha character varying(255) NOT NULL,
+    confirmar_senha character varying(255)
 );
 
 
@@ -60,6 +99,13 @@ ALTER SEQUENCE public.usuarios_id_seq OWNED BY public.usuarios.id;
 
 
 --
+-- Name: servicos id; Type: DEFAULT; Schema: public; Owner: usuario
+--
+
+ALTER TABLE ONLY public.servicos ALTER COLUMN id SET DEFAULT nextval('public.servicos_id_seq'::regclass);
+
+
+--
 -- Name: usuarios id; Type: DEFAULT; Schema: public; Owner: usuario
 --
 
@@ -67,13 +113,29 @@ ALTER TABLE ONLY public.usuarios ALTER COLUMN id SET DEFAULT nextval('public.usu
 
 
 --
+-- Data for Name: servicos; Type: TABLE DATA; Schema: public; Owner: usuario
+--
+
+COPY public.servicos (id, nome, categoria, descricao, duracao_minutos, preco) FROM stdin;
+1	Consulta médica	Saúde	Atendimento clínico geral	30	150.00
+\.
+
+
+--
 -- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: usuario
 --
 
-COPY public.usuarios (id, nome_completo, email, telefone, senha) FROM stdin;
-1	Ana Souza	ana@email.com	21999999999	minha_senha
-2	João Silva	joao@email.com	11999999999	senha123
+COPY public.usuarios (id, nome_completo, email, telefone, senha, confirmar_senha) FROM stdin;
+1	Ana Souza	ana@email.com	21999999999	minha_senha	\N
+2	João Silva	joao@email.com	11999999999	senha123	\N
 \.
+
+
+--
+-- Name: servicos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: usuario
+--
+
+SELECT pg_catalog.setval('public.servicos_id_seq', 1, true);
 
 
 --
@@ -81,6 +143,14 @@ COPY public.usuarios (id, nome_completo, email, telefone, senha) FROM stdin;
 --
 
 SELECT pg_catalog.setval('public.usuarios_id_seq', 2, true);
+
+
+--
+-- Name: servicos servicos_pkey; Type: CONSTRAINT; Schema: public; Owner: usuario
+--
+
+ALTER TABLE ONLY public.servicos
+    ADD CONSTRAINT servicos_pkey PRIMARY KEY (id);
 
 
 --
@@ -103,5 +173,5 @@ ALTER TABLE ONLY public.usuarios
 -- PostgreSQL database dump complete
 --
 
-\unrestrict bov5QdpGTD9hIlfaQxOHdepmTSofYfsW0k03wt5ZOdnBV6arvUgE0jsUgNNtZ0m
+\unrestrict 5PaEBrA9YeztkOJMGY6hKUsBGAmmF5QHTx9AotqFIOeKGof8W6p4pSBCyFwuCOQ
 
