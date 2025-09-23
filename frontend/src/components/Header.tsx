@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Menu, X, User, Bell, Search } from 'lucide-react';
+import { Calendar, Menu, X, User, Bell, Search, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 import { useLanguage } from './LanguageProvider';
 import { useTheme } from './ThemeProvider';
+import { useAuth } from '../hooks/useAuth';
+import toast from 'react-hot-toast';
 
 interface HeaderProps {
   onLoginClick?: () => void;
@@ -15,6 +17,12 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    toast.success('👋 Logout realizado com sucesso! Até logo!');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -112,33 +120,70 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
               </Button>
             </motion.div>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground cursor-pointer"
-                onClick={onLoginClick}
-              >
-                <User className="w-4 h-4 mr-2" />
-                {t.login}
-              </Button>
-            </motion.div>
-            
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                size="sm"
-                className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-                onClick={onRegisterClick}
-              >
-                {t.register}
-              </Button>
-            </motion.div>
+            {isAuthenticated ? (
+              // Usuário logado
+              <>
+                <motion.div
+                  className="flex items-center space-x-3"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Bem-vindo, </span>
+                    <span className="font-medium text-foreground">
+                      {user?.nome_completo?.split(' ')[0] || 'Usuário'}
+                    </span>
+                  </div>
+                </motion.div>
+                
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-300 cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sair
+                  </Button>
+                </motion.div>
+              </>
+            ) : (
+              // Usuário não logado
+              <>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-foreground cursor-pointer"
+                    onClick={onLoginClick}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    {t.login}
+                  </Button>
+                </motion.div>
+                
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    size="sm"
+                    className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                    onClick={onRegisterClick}
+                  >
+                    {t.register}
+                  </Button>
+                </motion.div>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -201,27 +246,54 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
                 ))}
                 
                 <div className="pt-4 border-t border-border space-y-3">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-muted-foreground cursor-pointer"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      onLoginClick?.();
-                    }}
-                  >
-                    <User className="w-4 h-4 mr-2" />
-                    {t.login}
-                  </Button>
-                  
-                  <Button
-                    className="w-full bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 cursor-pointer"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      onRegisterClick?.();
-                    }}                  
-                    >
-                    {t.register}
-                  </Button>
+                  {isAuthenticated ? (
+                    // Usuário logado no mobile
+                    <>
+                      <div className="px-2 py-2 text-sm">
+                        <span className="text-muted-foreground">Bem-vindo, </span>
+                        <span className="font-medium text-foreground">
+                          {user?.nome_completo?.split(' ')[0] || 'Usuário'}
+                        </span>
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 cursor-pointer"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          handleLogout();
+                        }}
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sair
+                      </Button>
+                    </>
+                  ) : (
+                    // Usuário não logado no mobile
+                    <>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-muted-foreground cursor-pointer"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          onLoginClick?.();
+                        }}
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        {t.login}
+                      </Button>
+                      
+                      <Button
+                        className="w-full bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 cursor-pointer"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          onRegisterClick?.();
+                        }}                  
+                        >
+                        {t.register}
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

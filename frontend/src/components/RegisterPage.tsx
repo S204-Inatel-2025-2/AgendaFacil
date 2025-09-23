@@ -8,6 +8,8 @@ import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import { Checkbox } from './ui/checkbox';
 import { useLanguage } from './LanguageProvider';
+import { useAuth } from '../hooks/useAuth';
+import toast from 'react-hot-toast';
 
 interface RegisterPageProps {
   onBack: () => void;
@@ -16,38 +18,54 @@ interface RegisterPageProps {
 
 export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
   const { t } = useLanguage();
+  const { register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
+    nome_completo: '',
     email: '',
-    phone: '',
-    password: '',
+    telefone: '',
+    senha: '',
     confirmPassword: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      alert('As senhas não coincidem');
-      return;
-    }
-    
-    if (!agreeTerms) {
-      alert('Você deve aceitar os termos de uso');
-      return;
-    }
-    
     setIsLoading(true);
+    setError(null);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2500));
+    // Validação de senha
+    if (formData.senha !== formData.confirmPassword) {
+      setError('As senhas não coincidem');
+      setIsLoading(false);
+      return;
+    }
     
-    console.log('Register attempt:', formData);
-    setIsLoading(false);
+    try {
+      const success = await register({
+        nome_completo: formData.nome_completo,
+        email: formData.email,
+        telefone: formData.telefone,
+        senha: formData.senha
+      });
+      
+      if (success) {
+        toast.success('🎉 Cadastro realizado com sucesso! Bem-vindo ao AgendaFácil!');
+        console.log('Cadastro realizado com sucesso!');
+        onBack();
+      } else {
+        setError('Erro no cadastro. Tente novamente.');
+        toast.error('❌ Erro no cadastro. Verifique os dados e tente novamente.');
+      }
+    } catch (err) {
+      setError('Erro inesperado. Tente novamente.');
+      console.error('Erro no cadastro:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -71,7 +89,7 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
 
   const handlePhoneChange = (value: string) => {
     const formatted = formatPhone(value);
-    handleInputChange('phone', formatted);
+    handleInputChange('telefone', formatted);
   };
 
   const pageVariants = {
@@ -216,6 +234,17 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                 </motion.p>
               </div>
 
+              {/* Error message */}
+              {error && (
+                <motion.div
+                  className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {error}
+                </motion.div>
+              )}
+
               {/* Register form */}
               <motion.form
                 onSubmit={handleSubmit}
@@ -235,8 +264,8 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                       id="name"
                       type="text"
                       placeholder={t.register_name_placeholder}
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      value={formData.nome_completo}
+                      onChange={(e) => handleInputChange('nome_completo', e.target.value)}
                       className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
                       required
                     />
@@ -273,7 +302,7 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                       id="phone"
                       type="tel"
                       placeholder={t.register_phone_placeholder}
-                      value={formData.phone}
+                      value={formData.telefone}
                       onChange={(e) => handlePhoneChange(e.target.value)}
                       className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
                       maxLength={15}
@@ -293,8 +322,8 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder={t.register_password_placeholder}
-                      value={formData.password}
-                      onChange={(e) => handleInputChange('password', e.target.value)}
+                      value={formData.senha}
+                      onChange={(e) => handleInputChange('senha', e.target.value)}
                       className="pl-10 pr-12 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
                       required
                       minLength={6}
