@@ -401,7 +401,7 @@ export function ServiceManagement({
                                         </span>
                                         <div className="flex items-center gap-1">
                                           <div className={`w-2 h-2 rounded-full ${
-                                            slotsForDate.length > 0 ? "bg-emerald-500" : "bg-muted-foreground"
+                                            slotsForDate.length > 0 ? "bg-emerald-500 dark:bg-emerald-400" : "bg-muted-foreground"
                                           }`} />
                                           <span className="text-xs opacity-80">
                                             {slotsForDate.length} vagas
@@ -424,7 +424,6 @@ export function ServiceManagement({
                                 ?.map((slot) => {
                                   const isAvailable = slot.available;
                                   const isMorning = parseInt(slot.time.split(':')[0]) < 12;
-                                  const isAfternoon = parseInt(slot.time.split(':')[0]) >= 12 && parseInt(slot.time.split(':')[0]) < 18;
                                   
                                   return (
                                     <motion.div
@@ -438,9 +437,8 @@ export function ServiceManagement({
                                         className={`h-12 w-full flex-col gap-1 transition-all duration-200 hover:scale-105 hover:-translate-y-1 ${
                                           isAvailable 
                                             ? `hover:bg-primary hover:text-white hover:border-primary shadow-sm hover:shadow-lg ${
-                                                isMorning ? "border-blue-200 hover:border-blue-500" :
-                                                isAfternoon ? "border-orange-200 hover:border-orange-500" :
-                                                "border-purple-200 hover:border-purple-500"
+                                                isMorning ? "border-blue-200 dark:border-blue-300 hover:border-blue-500 dark:hover:border-blue-400" :
+                                                "border-orange-200 dark:border-orange-300 hover:border-orange-500 dark:hover:border-orange-400"
                                               }` 
                                             : "opacity-50 cursor-not-allowed bg-muted/50"
                                         }`}
@@ -454,7 +452,7 @@ export function ServiceManagement({
                                         <span className="text-sm font-medium">{slot.time}</span>
                                         <div className="flex items-center gap-1">
                                           <div className={`w-1.5 h-1.5 rounded-full ${
-                                            isAvailable ? "bg-emerald-500" : "bg-muted-foreground"
+                                            isAvailable ? "bg-emerald-500 dark:bg-emerald-400" : "bg-muted-foreground"
                                           }`} />
                                           <span className="text-xs opacity-70">
                                             {isAvailable ? "Livre" : "Ocupado"}
@@ -493,20 +491,20 @@ export function ServiceManagement({
                           <div className="mt-6 pt-4 border-t border-border">
                             <div className="flex flex-wrap items-center gap-6 text-sm">
                               <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 border-2 border-emerald-500 rounded-full bg-emerald-50"></div>
-                                <span className="text-emerald-700 font-medium">Disponível</span>
+                                <div className="w-3 h-3 border-2 border-emerald-500 dark:border-emerald-400 rounded-full bg-emerald-50 dark:bg-emerald-500/20"></div>
+                                <span className="text-emerald-700 dark:text-emerald-400 font-medium">Disponível</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 bg-muted rounded-full"></div>
                                 <span className="text-muted-foreground">Ocupado</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 border-2 border-blue-300 rounded-full bg-blue-50"></div>
-                                <span className="text-blue-700">Manhã</span>
+                                <div className="w-3 h-3 border-2 border-blue-300 dark:border-blue-400 rounded-full bg-blue-50 dark:bg-blue-500/20"></div>
+                                <span className="text-blue-700 dark:text-blue-400">Manhã</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 border-2 border-orange-300 rounded-full bg-orange-50"></div>
-                                <span className="text-orange-700">Tarde</span>
+                                <div className="w-3 h-3 border-2 border-orange-300 dark:border-orange-400 rounded-full bg-orange-50 dark:bg-orange-500/20"></div>
+                                <span className="text-orange-700 dark:text-orange-400">Tarde</span>
                               </div>
                               {isProviderMode && (
                                 <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
@@ -792,7 +790,7 @@ export function ServiceManagement({
                                         </span>
                                         <div className="flex items-center gap-1">
                                           <div className={`w-2 h-2 rounded-full ${
-                                            slotsForDate.length > 0 ? "bg-emerald-500" : "bg-muted-foreground"
+                                            slotsForDate.length > 0 ? "bg-emerald-500 dark:bg-emerald-400" : "bg-muted-foreground"
                                           }`} />
                                           <span className="text-xs opacity-80">
                                             {slotsForDate.length}/{totalSlots}
@@ -815,7 +813,6 @@ export function ServiceManagement({
                                 ?.map((slot) => {
                                   const isAvailable = slot.available;
                                   const isMorning = parseInt(slot.time.split(':')[0]) < 12;
-                                  const isAfternoon = parseInt(slot.time.split(':')[0]) >= 12 && parseInt(slot.time.split(':')[0]) < 18;
                                   
                                   return (
                                     <motion.div
@@ -829,9 +826,8 @@ export function ServiceManagement({
                                         className={`h-12 w-full flex-col gap-1 transition-all duration-200 hover:scale-105 hover:-translate-y-1 ${
                                           isAvailable 
                                             ? `bg-primary text-white hover:bg-primary/90 shadow-sm hover:shadow-lg ${
-                                                isMorning ? "ring-2 ring-blue-200" :
-                                                isAfternoon ? "ring-2 ring-orange-200" :
-                                                "ring-2 ring-purple-200"
+                                                isMorning ? "ring-2 ring-blue-200 dark:ring-blue-300" :
+                                                "ring-2 ring-orange-200 dark:ring-orange-300"
                                               }` 
                                             : "bg-muted hover:bg-muted/80 border-muted-foreground/20"
                                         }`}
@@ -840,7 +836,7 @@ export function ServiceManagement({
                                         <span className="text-sm font-medium">{slot.time}</span>
                                         <div className="flex items-center gap-1">
                                           <div className={`w-1.5 h-1.5 rounded-full ${
-                                            isAvailable ? "bg-white" : "bg-muted-foreground"
+                                            isAvailable ? "bg-white dark:bg-gray-200" : "bg-muted-foreground"
                                           }`} />
                                           <span className="text-xs opacity-80">
                                             {isAvailable ? "Ativo" : "Inativo"}
@@ -873,7 +869,7 @@ export function ServiceManagement({
                                     onServicesUpdate(updatedServices);
                                     toast.success('Todos os horários liberados!');
                                   }}
-                                  className="hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+                                  className="hover:bg-emerald-50 dark:hover:bg-emerald-500/20 hover:border-emerald-300 dark:hover:border-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-400"
                                 >
                                   <CheckCircle className="w-4 h-4 mr-2" />
                                   Liberar Todos
@@ -894,7 +890,7 @@ export function ServiceManagement({
                                     onServicesUpdate(updatedServices);
                                     toast.success('Todos os horários bloqueados!');
                                   }}
-                                  className="hover:bg-red-50 hover:border-red-300 hover:text-red-700"
+                                  className="hover:bg-red-50 dark:hover:bg-red-500/20 hover:border-red-300 dark:hover:border-red-400 hover:text-red-700 dark:hover:text-red-400"
                                 >
                                   <X className="w-4 h-4 mr-2" />
                                   Bloquear Todos
