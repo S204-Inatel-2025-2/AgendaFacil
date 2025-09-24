@@ -22,6 +22,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ServiceManagement } from './ServiceManagement';
 import { useLanguage } from './LanguageProvider';
@@ -244,10 +245,19 @@ export function ServiceDetailPage({
               <div className="flex items-center gap-3 mb-2">
                 <h2 className="text-2xl font-bold">{company.name}</h2>
                 {company.verified && (
-                  <Badge className="bg-primary text-white">
-                    <Shield className="w-3 h-3 mr-1" />
-                    Verificado
-                  </Badge>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge className="bg-primary text-white cursor-help">
+                        <Shield className="w-3 h-3 mr-1" />
+                        Verificado
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-white text-gray-900 border border-gray-200 shadow-lg max-w-xs">
+                      <p className="text-sm font-medium leading-relaxed">
+                        Este usuário comprovou com documentos que existe e é um profissional qualificado
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
                 )}
               </div>
               <p className="text-white/90 mb-3 max-w-2xl">{company.description}</p>
