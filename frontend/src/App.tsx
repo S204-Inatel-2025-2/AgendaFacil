@@ -122,6 +122,10 @@ function AppContent() {
   };
 
   useEffect(() => {
+    window.scrollTo(0,0); // Scroll to top on page change
+  }, [currentPage]);
+
+  useEffect(() => {
     // Apple-style loading duration
     const timer = setTimeout(() => {
       setIsLoading(false);
