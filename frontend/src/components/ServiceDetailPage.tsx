@@ -11,12 +11,16 @@ import {
   Settings,
   Plus,
   Edit3,
-  Check,
   X,
   Heart,
-  Share2,
   MessageCircle,
-  Shield
+  Shield,
+  Copy, 
+  Check, 
+  Share2, 
+  Facebook, 
+  Twitter, 
+  
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -26,6 +30,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ServiceManagement } from './ServiceManagement';
 import { useLanguage } from './LanguageProvider';
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { toast}  from "react-hot-toast";
+import { FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
 
 interface TimeSlot {
   id: string;
@@ -82,6 +89,20 @@ export function ServiceDetailPage({
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
   const [isProviderMode, setIsProviderMode] = useState(false);
+  
+  // estado do popup de compartilhamento
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const link = typeof window !== "undefined" ? window.location.href : "";
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(link);
+    setCopied(true);
+    toast.success("🔗 Link copiado!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+  
   // Generate time slots for a service
   const generateTimeSlots = () => {
     const slots: any[] = [];
@@ -180,14 +201,14 @@ export function ServiceDetailPage({
 
   return (
     <motion.div 
-      className="min-h-screen bg-background"
+      className="min-h-screen bg-background pt-16"
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
     >
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+      <div className=" bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -209,7 +230,7 @@ export function ServiceDetailPage({
             </div>
 
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => setIsShareOpen(true)}>
                 <Share2 className="w-4 h-4 mr-2" />
                 Compartilhar
               </Button>
@@ -436,6 +457,115 @@ export function ServiceDetailPage({
           </TabsContent>
         </Tabs>
       </div>
+      <AnimatePresence>
+        {isShareOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-2xl p-6 w-[90%] max-w-md"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Compartilhar</h2>
+                <button
+                  onClick={() => setIsShareOpen(false)}
+                  className="text-gray-500 hover:text-gray-800 cursor pointer"
+                >
+                  <X className=" w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Link + copiar */}
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  type="text"
+                  readOnly
+                  value={window.location.href}
+                  className="flex-1 border rounded-lg px-3 py-2 text-sm text-gray-600"
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Link copiado!");
+                  }}
+                >
+                  <Copy className="bg-white w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Opções de compartilhamento */}
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    window.open(
+                      `https://wa.me/?text=${encodeURIComponent(window.location.href)}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <FaWhatsapp className="w-4 h-4 mr-2 text-green-600" />
+                  WhatsApp
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    window.open(
+                      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                        window.location.href
+                      )}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <Facebook className="w-4 h-4 mr-2 text-blue-600" />
+                  Facebook
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    window.open(
+                      `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                        window.location.href
+                      )}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <Twitter className="w-4 h-4 mr-2 text-sky-500" />
+                  Twitter
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    window.open(
+                      `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <FaTelegramPlane className="w-4 h-4 mr-2 text-blue-500" />
+                  Telegram
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
     </motion.div>
   );
 }
