@@ -1,9 +1,10 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowLeft, MapPin, Star, Clock, Phone, Users, Calendar, Filter, Search } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { useLanguage } from './LanguageProvider';
 
@@ -91,14 +92,14 @@ export function ServiceCategoryPage({
 
   return (
     <motion.div 
-      className="min-h-screen bg-background"
+      className="min-h-screen bg-background pt-16"
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
     >
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+      <div className=" bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -197,9 +198,18 @@ export function ServiceCategoryPage({
                   {/* Verified Badge */}
                   {company.verified && (
                     <div className="absolute top-3 right-3">
-                      <Badge className="bg-primary text-white">
-                        ✓ Verificado
-                      </Badge>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge className="bg-primary text-white cursor-help">
+                            ✓ Verificado
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-white text-gray-900 border border-gray-200 shadow-lg max-w-xs">
+                          <p className="text-sm font-medium leading-relaxed">
+                            Este usuário comprovou com documentos que existe e é um profissional qualificado
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                   )}
 

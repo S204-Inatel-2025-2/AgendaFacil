@@ -20,8 +20,8 @@ const translations = {
     // Hero Section
     hero_title: "Agende seus serviços com facilidade",
     hero_subtitle: "Conectamos você aos melhores profissionais da sua região. Agendamento online rápido, seguro e confiável.",
-    hero_cta_primary: "Agendar Agora",
-    hero_cta_secondary: "Ver Serviços",
+    hero_cta_primary: "Cadastrar meus serviços",
+    hero_cta_secondary: "Ver serviços",
     hero_stats_providers: "Profissionais",
     hero_stats_bookings: "Agendamentos",
     hero_stats_cities: "Cidades",
@@ -44,8 +44,8 @@ const translations = {
     // Quick Access
     quick_access_title: "Acesso Rápido",
     quick_access_subtitle: "Principais funcionalidades em um clique",
-    quick_book: "Agendar Serviço",
-    quick_book_desc: "Reserve seu horário rapidamente",
+    quick_book: "Meus agendamentos",
+    quick_book_desc: "Acesse seus agendamentos",
     quick_reschedule: "Reagendar",
     quick_reschedule_desc: "Altere seus agendamentos",
     quick_history: "Histórico",

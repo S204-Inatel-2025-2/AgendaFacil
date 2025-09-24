@@ -31,7 +31,7 @@ export function FloatingButtons() {
     },
     {
       icon: Flag,
-      label: 'Lapor Masalah',
+      label: 'Reportar',
       color: 'bg-red-500 hover:bg-red-600',
       action: () => console.log('Report clicked')
     },
