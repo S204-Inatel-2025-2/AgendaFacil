@@ -33,13 +33,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { toast } from "react-hot-toast";
 import { FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
 
-interface TimeSlot {
-  id: string;
-  time: string;
-  available: boolean;
-  date: string;
-}
-
 interface Service {
   id: string;
   name: string;
@@ -48,6 +41,13 @@ interface Service {
   price: number;
   category: string;
   timeSlots: TimeSlot[];
+}
+
+interface TimeSlot {
+  id: string;
+  time: string;
+  available: boolean;
+  serviceId?: string;
 }
 
 interface Company {
@@ -504,6 +504,85 @@ export function ServiceDetailPage({
                 </button>
               </div>
               
+               {/* Link + copiar */}
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  type="text"
+                  readOnly
+                  value={window.location.href}
+                  className="flex-1 border rounded-lg px-3 py-2 text-sm text-gray-600"
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Link copiado!");
+                  }}
+                >
+                  <Copy className="bg-white w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Opções de compartilhamento */}
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    window.open(
+                      `https://wa.me/?text=${encodeURIComponent(window.location.href)}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <FaWhatsapp className="w-4 h-4 mr-2 text-green-600" />
+                  WhatsApp
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    window.open(
+                      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                        window.location.href
+                      )}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <Facebook className="w-4 h-4 mr-2 text-blue-600" />
+                  Facebook
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    window.open(
+                      `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                        window.location.href
+                      )}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <Twitter className="w-4 h-4 mr-2 text-sky-500" />
+                  Twitter
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    window.open(
+                      `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  <FaTelegramPlane className="w-4 h-4 mr-2 text-blue-500" />
+                  Telegram
+                </Button>
+              </div>
+
             </motion.div>
           </motion.div>
         )}
