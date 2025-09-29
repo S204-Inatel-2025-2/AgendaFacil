@@ -3,20 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Menu, X, User, Bell, Search, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 import { useLanguage } from './LanguageProvider';
-import { useTheme } from './ThemeProvider';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 interface HeaderProps {
   onLoginClick?: () => void;
   onRegisterClick?: () => void;
+  onAppointmentsClick?: () => void;
 }
 
-export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
+export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useLanguage();
-  const { theme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
 
   const handleLogout = () => {
@@ -33,10 +32,19 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleAppointmentsClick = () => {
+    if (!isAuthenticated) {
+      toast.error('Você precisa fazer login para acessar seus agendamentos');
+      onLoginClick?.();
+      return;
+    }
+    onAppointmentsClick?.();
+  };
+
   const navItems = [
     { label: t.nav_services, href: '#services' },
     { label: t.nav_schedule, href: '#schedule' },
-    { label: t.nav_my_appointments, href: '#appointments' },
+    { label: t.nav_my_appointments, href: '#appointments', onClick: handleAppointmentsClick },
     { label: t.nav_about, href: '#about' },
     { label: t.nav_contact, href: '#contact' }
   ];
@@ -73,8 +81,9 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
             {navItems.map((item, index) => (
               <motion.a
                 key={item.href}
-                href={item.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative"
+                href={item.onClick ? undefined : item.href}
+                onClick={item.onClick}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative cursor-pointer"
                 whileHover={{ y: -2 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -234,9 +243,12 @@ export function Header({ onLoginClick, onRegisterClick }: HeaderProps) {
                 {navItems.map((item, index) => (
                   <motion.a
                     key={item.href}
-                    href={item.href}
-                    className="block text-base font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    href={item.onClick ? undefined : item.href}
+                    onClick={item.onClick ? () => {
+                      setIsMobileMenuOpen(false);
+                      item.onClick?.();
+                    } : () => setIsMobileMenuOpen(false)}
+                    className="block text-base font-medium text-muted-foreground hover:text-foreground transition-colors py-2 cursor-pointer"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}

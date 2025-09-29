@@ -14,6 +14,7 @@ import { AuthProvider } from './hooks/useAuth';
 import { ServiceDetailPage } from './components/ServiceDetailPage';
 import { serviceCategories } from './components/ServiceData';
 import { ServiceCategoryPage } from './components/ServiceCategoryPage';
+import { AppointmentsPage } from './components/AppointmentsPage';
 
 // Apple-style Loading Component
 function AppleLoadingScreen() {
@@ -107,7 +108,7 @@ function ApplePageTransition({ children }: { children: React.ReactNode }) {
 
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail' | 'appointments'>('home');
   const [currentServiceCategory, setCurrentServiceCategory] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
 
@@ -193,7 +194,14 @@ function AppContent() {
       <AnimatePresence mode="wait">
         {!isLoading && currentPage === 'home' && (
           <ApplePageTransition key="main">
-            
+            {/* Header with absolute positioning to not interfere with hero */}
+            <div className="relative z-50">
+              <Header 
+                onLoginClick={() => setCurrentPage('login')}
+                onRegisterClick={() => setCurrentPage('register')}
+                onAppointmentsClick={() => setCurrentPage('appointments')}
+              />
+            </div>
             
             {/* Hero section - full screen without padding conflicts */}
             <motion.div
@@ -282,6 +290,14 @@ function AppContent() {
         }}
         initial={{ scaleX: 0 }}
       />
+      )}
+
+      {!isLoading && currentPage === 'appointments' && (
+        <ApplePageTransition key="appointments">
+          <AppointmentsPage 
+            onBack={() => setCurrentPage('home')}
+          />
+        </ApplePageTransition>
       )}
       
       {/* Toast notifications */}
