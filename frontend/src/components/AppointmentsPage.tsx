@@ -280,42 +280,32 @@ export function AppointmentsPage({ onBack }: AppointmentsPageProps) {
 
   return (
     <motion.div 
-      className="min-h-screen bg-background"
+      className="min-h-screen bg-background pt-16"
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
     >
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-sm">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="bg-background/80 backdrop-blur-xl border-b border-border">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onBack}
+                className="hover:bg-muted/80"
               >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onBack}
-                  className="hover:bg-muted/80 rounded-xl px-4 py-2"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Voltar
-                </Button>
-              </motion.div>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar
+              </Button>
               
-              <div className="space-y-1">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-                  Meus Agendamentos
-                </h1>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Gerencie todos os seus agendamentos de forma inteligente
-                </p>
+              <div>
+                <h1 className="text-xl font-semibold text-foreground">Meus Agendamentos</h1>
+                <p className="text-sm text-muted-foreground">Gerencie todos os seus agendamentos</p>
               </div>
             </div>
-
           </div>
         </div>
       </div>
