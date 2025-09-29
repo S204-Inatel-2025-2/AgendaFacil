@@ -179,6 +179,18 @@ function AppContent() {
         {isLoading && <AppleLoadingScreen key="loading" />}
       </AnimatePresence>
 
+    {/* ✅ Header fixo em todas as páginas */}
+      {!isLoading && (
+        <div className="relative z-50">
+          <Header 
+            onLoginClick={() => setCurrentPage('login')}
+            onRegisterClick={() => setCurrentPage('register')}
+          />
+        </div>
+      )}
+
+      <FloatingButtons/>
+
       <AnimatePresence mode="wait">
         {!isLoading && currentPage === 'home' && (
           <ApplePageTransition key="main">
@@ -222,8 +234,7 @@ function AppContent() {
             >
               <Footer />
             </motion.div>
-            
-            <FloatingButtons/>
+          
           </ApplePageTransition>
         )}
 

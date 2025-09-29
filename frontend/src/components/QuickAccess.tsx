@@ -38,13 +38,6 @@ export function QuickAccess() {
     }
   ];
 
-  const stats = [
-    { value: '24/7', label: 'Disponibilidade', icon: Clock },
-    { value: '98%', label: 'Satisfação', icon: UserCheck },
-    { value: '< 5min', label: 'Tempo Médio', icon: Calendar },
-    { value: '15K+', label: 'Profissionais', icon: Heart }
-  ];
-
   return (
     <section className="relative py-20 lg:py-32 bg-gradient-to-b from-background to-muted/30">
       {/* Background Elements */}
@@ -62,15 +55,6 @@ export function QuickAccess() {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
         >
-          <motion.div
-            className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            ⚡ Acesso Rápido
-          </motion.div>
           
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6">
             {t.quick_access_title}
@@ -137,67 +121,6 @@ export function QuickAccess() {
             </motion.div>
           ))}
         </div>
-
-        {/* Stats Section */}
-        {/*<motion.div
-          className="bg-gradient-to-r from-primary/5 to-emerald-600/5 rounded-3xl p-8 lg:p-12 border border-primary/10"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                className="text-center"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-              >
-                <motion.div
-                  className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center"
-                  whileHover={{ scale: 1.2, rotate: 10 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <stat.icon className="w-6 h-6 text-primary" />
-                </motion.div>
-                
-                <motion.div
-                  className="text-3xl font-bold text-foreground mb-2"
-                  initial={{ scale: 0.5 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 1 + index * 0.1 }}
-                >
-                  {stat.value}
-                </motion.div>
-                
-                <div className="text-sm text-muted-foreground font-medium">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>*/}
-
-        {/* CTA Section */}
-        {/*<motion.div
-          className="text-center mt-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-        >
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-          >
-            <Calendar className="w-5 h-5 mr-2" />
-            {t.get_started}
-          </Button>
-        </motion.div>*/}
       </div>
     </section>
   );
