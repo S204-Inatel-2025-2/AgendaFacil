@@ -225,7 +225,7 @@ export function ServiceDetailPage({
 
   return (
     <motion.div 
-      className="min-h-screen bg-background pt-16"
+      className="min-h-screen bg-background pt-24"
       variants={pageVariants}
       initial="initial"
       animate="animate"
