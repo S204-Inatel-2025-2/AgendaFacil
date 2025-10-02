@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, ArrowLeft, Apple, Smartphone } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Apple, Smartphone } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -139,24 +139,8 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
         />
       </div>
 
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+      <div className="relative z-10 flex items-center justify-center min-h-screen p-4 pt-18">
         <div className="w-full max-w-md">
-          {/* Back button */}
-          <motion.div
-            className="mb-8"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
-          >
-            <Button
-              variant="ghost"
-              onClick={onBack}
-              className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              {t.back_to_home}
-            </Button>
-          </motion.div>
 
           {/* Login card */}
           <motion.div variants={cardVariants}>

@@ -181,12 +181,11 @@ function AppContent() {
 
     {/* ✅ Header fixo em todas as páginas */}
       {!isLoading && (
-        <div className="relative z-50">
-          <Header 
-            onLoginClick={() => setCurrentPage('login')}
-            onRegisterClick={() => setCurrentPage('register')}
-          />
-        </div>
+        <Header 
+          onLoginClick={() => setCurrentPage('login')}
+          onRegisterClick={() => setCurrentPage('register')}
+          onAppointmentsClick={() => setCurrentPage('appointments')}
+        />
       )}
 
       <FloatingButtons/>
@@ -194,15 +193,6 @@ function AppContent() {
       <AnimatePresence mode="wait">
         {!isLoading && currentPage === 'home' && (
           <ApplePageTransition key="main">
-            {/* Header with absolute positioning to not interfere with hero */}
-            <div className="relative z-50">
-              <Header 
-                onLoginClick={() => setCurrentPage('login')}
-                onRegisterClick={() => setCurrentPage('register')}
-                onAppointmentsClick={() => setCurrentPage('appointments')}
-              />
-            </div>
-            
             {/* Hero section - full screen without padding conflicts */}
             <motion.div
               initial={{ opacity: 0 }}
