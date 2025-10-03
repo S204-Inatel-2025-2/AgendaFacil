@@ -144,6 +144,9 @@ export function AppointmentsPage({ onBack }: AppointmentsPageProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   // Carregar dados iniciais
   useEffect(() => {
@@ -187,63 +190,119 @@ export function AppointmentsPage({ onBack }: AppointmentsPageProps) {
 
   // Aplicar filtros
   useEffect(() => {
-    let filtered = appointments;
+    const applyFilters = async () => {
+      setIsFiltering(true);
+      
+      // Simular um pequeno delay para mostrar o loading
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      let filtered = appointments;
+      
+      // Filtro por status (prioridade para activeFilter)
+      if (activeFilter) {
+        if (activeFilter === 'total') {
+          // Mostrar todos os agendamentos
+          filtered = appointments;
+        } else if (activeFilter === 'today') {
+          const today = new Date().toISOString().split('T')[0];
+          filtered = filtered.filter(apt => apt.date === today);
+        } else if (activeFilter === 'thisWeek') {
+          const thisWeek = new Date();
+          thisWeek.setDate(thisWeek.getDate() + 7);
+          filtered = filtered.filter(apt => new Date(apt.date) <= thisWeek);
+        } else {
+          // Filtro por status específico
+          filtered = filtered.filter(apt => apt.status === activeFilter);
+        }
+      } else if (filters.status) {
+        filtered = filtered.filter(apt => apt.status === filters.status);
+      }
+      
+      // Filtro por data
+      if (filters.dateFrom) {
+        filtered = filtered.filter(apt => apt.date >= filters.dateFrom!);
+      }
+      if (filters.dateTo) {
+        filtered = filtered.filter(apt => apt.date <= filters.dateTo!);
+      }
+      
+      // Filtro por empresa
+      if (filters.companyId) {
+        filtered = filtered.filter(apt => apt.companyId === filters.companyId);
+      }
+      
+      // Filtro por serviço
+      if (filters.serviceId) {
+        filtered = filtered.filter(apt => apt.serviceId === filters.serviceId);
+      }
+      
+      // Busca por texto
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtered = filtered.filter(apt => 
+          apt.serviceName.toLowerCase().includes(term) ||
+          apt.companyName.toLowerCase().includes(term) ||
+          apt.userName.toLowerCase().includes(term)
+        );
+      }
+      
+      setFilteredAppointments(filtered);
+      setIsFiltering(false);
+    };
     
-    // Filtro por status
-    if (filters.status) {
-      filtered = filtered.filter(apt => apt.status === filters.status);
-    }
-    
-    // Filtro por data
-    if (filters.dateFrom) {
-      filtered = filtered.filter(apt => apt.date >= filters.dateFrom!);
-    }
-    if (filters.dateTo) {
-      filtered = filtered.filter(apt => apt.date <= filters.dateTo!);
-    }
-    
-    // Filtro por empresa
-    if (filters.companyId) {
-      filtered = filtered.filter(apt => apt.companyId === filters.companyId);
-    }
-    
-    // Filtro por serviço
-    if (filters.serviceId) {
-      filtered = filtered.filter(apt => apt.serviceId === filters.serviceId);
-    }
-    
-    // Busca por texto
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(apt => 
-        apt.serviceName.toLowerCase().includes(term) ||
-        apt.companyName.toLowerCase().includes(term) ||
-        apt.userName.toLowerCase().includes(term)
-      );
-    }
-    
-    setFilteredAppointments(filtered);
-  }, [appointments, filters, searchTerm]);
+    applyFilters();
+  }, [appointments, filters, searchTerm, activeFilter]);
 
-  const handleStatusChange = (appointmentId: string, newStatus: Appointment['status']) => {
-    setAppointments(prev => 
-      prev.map(apt => 
-        apt.id === appointmentId 
-          ? { ...apt, status: newStatus, updatedAt: new Date().toISOString() }
-          : apt
-      )
-    );
-    toast.success('Status atualizado com sucesso!');
+  const handleStatusChange = async (appointmentId: string, newStatus: Appointment['status']) => {
+    setIsUpdating(true);
+    try {
+      // Simular delay da API
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      setAppointments(prev => 
+        prev.map(apt => 
+          apt.id === appointmentId 
+            ? { ...apt, status: newStatus, updatedAt: new Date().toISOString() }
+            : apt
+        )
+      );
+      toast.success('Status atualizado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao atualizar status');
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  const handleDeleteAppointment = (appointmentId: string) => {
-    setAppointments(prev => prev.filter(apt => apt.id !== appointmentId));
-    toast.success('Agendamento removido com sucesso!');
+  const handleDeleteAppointment = async (appointmentId: string) => {
+    setIsUpdating(true);
+    try {
+      // Simular delay da API
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      setAppointments(prev => prev.filter(apt => apt.id !== appointmentId));
+      toast.success('Agendamento removido com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao remover agendamento');
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const clearFilters = () => {
     setFilters({});
     setSearchTerm('');
+    setActiveFilter(null);
+  };
+
+  const handleFilterClick = (filterType: string) => {
+    if (activeFilter === filterType) {
+      // Se clicar no mesmo filtro, remove o filtro
+      setActiveFilter(null);
+    } else {
+      // Aplica o novo filtro
+      setActiveFilter(filterType);
+    }
   };
 
   const pageVariants = {
@@ -258,21 +317,107 @@ export function AppointmentsPage({ onBack }: AppointmentsPageProps) {
     exit: { opacity: 0, y: -20 }
   };
 
+  // Componente de skeleton para os cards de estatísticas
+  const StatsSkeleton = () => (
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 mb-8">
+      {Array.from({ length: 7 }).map((_, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+        >
+          <Card className="p-6 text-center bg-gradient-to-br from-muted/20 to-muted/10 dark:from-muted/10 dark:to-muted/5 border-border/30 rounded-2xl">
+            <div className="w-12 h-12 bg-muted/40 dark:bg-muted/30 rounded-lg mx-auto mb-3 animate-pulse"></div>
+            <div className="w-16 h-4 bg-muted/40 dark:bg-muted/30 rounded mx-auto animate-pulse"></div>
+          </Card>
+        </motion.div>
+      ))}
+    </div>
+  );
+
+  // Componente de skeleton para os agendamentos
+  const AppointmentSkeleton = () => (
+    <div className="space-y-4">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+        >
+          <Card className="p-6 rounded-2xl border-border/50">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-muted/40 dark:bg-muted/30 rounded-xl animate-pulse"></div>
+                  <div className="flex-1">
+                    <div className="w-48 h-6 bg-muted/40 dark:bg-muted/30 rounded mb-2 animate-pulse"></div>
+                    <div className="w-32 h-4 bg-muted/30 dark:bg-muted/20 rounded animate-pulse"></div>
+                  </div>
+                  <div className="w-20 h-6 bg-muted/40 dark:bg-muted/30 rounded-full animate-pulse"></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-muted/20">
+                      <div className="w-8 h-8 bg-muted/40 dark:bg-muted/30 rounded-lg animate-pulse"></div>
+                      <div className="flex-1">
+                        <div className="w-16 h-3 bg-muted/30 dark:bg-muted/20 rounded mb-1 animate-pulse"></div>
+                        <div className="w-24 h-4 bg-muted/40 dark:bg-muted/30 rounded animate-pulse"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 ml-6">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="w-10 h-10 bg-muted/40 dark:bg-muted/30 rounded-xl animate-pulse"></div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      ))}
+    </div>
+  );
+
   if (isLoading) {
     return (
       <motion.div 
-        className="min-h-screen bg-background flex items-center justify-center"
+        className="min-h-screen bg-background pt-16"
         variants={pageVariants}
         initial="initial"
         animate="animate"
       >
-        <div className="text-center">
-          <motion.div
-            className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          />
-          <p className="text-muted-foreground">Carregando agendamentos...</p>
+        {/* Header */}
+        <div className="bg-background/80 backdrop-blur-xl border-b border-border">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center gap-4">
+              <div className="w-8 h-8 bg-muted/40 dark:bg-muted/30 rounded animate-pulse"></div>
+              <div>
+                <div className="w-48 h-6 bg-muted/40 dark:bg-muted/30 rounded mb-2 animate-pulse"></div>
+                <div className="w-32 h-4 bg-muted/30 dark:bg-muted/20 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Cards Skeleton */}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <StatsSkeleton />
+          
+          {/* Search Skeleton */}
+          <Card className="p-6 bg-gradient-to-r from-background to-muted/10 dark:from-muted/5 dark:to-muted/10 border-border/50 dark:border-border/30 rounded-2xl shadow-sm dark:shadow-none mb-8">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <div className="w-full h-12 bg-muted/40 dark:bg-muted/30 rounded-xl animate-pulse"></div>
+              </div>
+              <div className="w-32 h-12 bg-muted/40 dark:bg-muted/30 rounded-xl animate-pulse"></div>
+            </div>
+          </Card>
+
+          {/* Appointments Skeleton */}
+          <AppointmentSkeleton />
         </div>
       </motion.div>
     );
@@ -320,71 +465,176 @@ export function AppointmentsPage({ onBack }: AppointmentsPageProps) {
         >
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="p-6 text-center bg-gradient-to-br from-background to-muted/20 dark:from-muted/10 dark:to-muted/5 border-border/50 dark:border-border/30 hover:border-primary/30 dark:hover:border-primary/40 transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl">
+            <Card 
+              className={`p-6 text-center cursor-pointer transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl ${
+                activeFilter === 'total' 
+                  ? 'bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 border-primary/50 dark:border-primary/40 shadow-lg dark:shadow-xl' 
+                  : 'bg-gradient-to-br from-background to-muted/20 dark:from-muted/10 dark:to-muted/5 border-border/50 dark:border-border/30 hover:border-primary/30 dark:hover:border-primary/40'
+              } ${isFiltering ? 'opacity-75' : ''}`}
+              onClick={() => !isFiltering && handleFilterClick('total')}
+            >
               <div className="text-3xl font-bold text-foreground mb-2">{stats.total}</div>
               <div className="text-sm font-medium text-muted-foreground">Total</div>
+              {isFiltering && activeFilter === 'total' && (
+                <motion.div
+                  className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full mx-auto mt-2"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+              )}
             </Card>
           </motion.div>
           
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="p-6 text-center bg-gradient-to-br from-yellow-50 to-yellow-100/50 dark:from-yellow-900/30 dark:to-yellow-800/20 border-yellow-200/50 dark:border-yellow-800/40 hover:border-yellow-300/50 dark:hover:border-yellow-700/60 transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl">
+            <Card 
+              className={`p-6 text-center cursor-pointer transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl ${
+                activeFilter === 'pending' 
+                  ? 'bg-gradient-to-br from-yellow-100 to-yellow-200/50 dark:from-yellow-800/40 dark:to-yellow-700/30 border-yellow-400/60 dark:border-yellow-600/50 shadow-lg dark:shadow-xl' 
+                  : 'bg-gradient-to-br from-yellow-50 to-yellow-100/50 dark:from-yellow-900/30 dark:to-yellow-800/20 border-yellow-200/50 dark:border-yellow-800/40 hover:border-yellow-300/50 dark:hover:border-yellow-700/60'
+              } ${isFiltering ? 'opacity-75' : ''}`}
+              onClick={() => !isFiltering && handleFilterClick('pending')}
+            >
               <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">{stats.pending}</div>
               <div className="text-sm font-medium text-muted-foreground">Pendentes</div>
+              {isFiltering && activeFilter === 'pending' && (
+                <motion.div
+                  className="w-4 h-4 border-2 border-yellow-600 border-t-transparent rounded-full mx-auto mt-2"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+              )}
             </Card>
           </motion.div>
           
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="p-6 text-center bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-900/30 dark:to-green-800/20 border-green-200/50 dark:border-green-800/40 hover:border-green-300/50 dark:hover:border-green-700/60 transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl">
+            <Card 
+              className={`p-6 text-center cursor-pointer transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl ${
+                activeFilter === 'confirmed' 
+                  ? 'bg-gradient-to-br from-green-100 to-green-200/50 dark:from-green-800/40 dark:to-green-700/30 border-green-400/60 dark:border-green-600/50 shadow-lg dark:shadow-xl' 
+                  : 'bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-900/30 dark:to-green-800/20 border-green-200/50 dark:border-green-800/40 hover:border-green-300/50 dark:hover:border-green-700/60'
+              } ${isFiltering ? 'opacity-75' : ''}`}
+              onClick={() => !isFiltering && handleFilterClick('confirmed')}
+            >
               <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">{stats.confirmed}</div>
               <div className="text-sm font-medium text-muted-foreground">Confirmados</div>
+              {isFiltering && activeFilter === 'confirmed' && (
+                <motion.div
+                  className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full mx-auto mt-2"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+              )}
             </Card>
           </motion.div>
           
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="p-6 text-center bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-800/20 border-blue-200/50 dark:border-blue-800/40 hover:border-blue-300/50 dark:hover:border-blue-700/60 transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl">
+            <Card 
+              className={`p-6 text-center cursor-pointer transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl ${
+                activeFilter === 'completed' 
+                  ? 'bg-gradient-to-br from-blue-100 to-blue-200/50 dark:from-blue-800/40 dark:to-blue-700/30 border-blue-400/60 dark:border-blue-600/50 shadow-lg dark:shadow-xl' 
+                  : 'bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-800/20 border-blue-200/50 dark:border-blue-800/40 hover:border-blue-300/50 dark:hover:border-blue-700/60'
+              } ${isFiltering ? 'opacity-75' : ''}`}
+              onClick={() => !isFiltering && handleFilterClick('completed')}
+            >
               <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">{stats.completed}</div>
               <div className="text-sm font-medium text-muted-foreground">Concluídos</div>
+              {isFiltering && activeFilter === 'completed' && (
+                <motion.div
+                  className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mt-2"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+              )}
             </Card>
           </motion.div>
           
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="p-6 text-center bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-900/30 dark:to-red-800/20 border-red-200/50 dark:border-red-800/40 hover:border-red-300/50 dark:hover:border-red-700/60 transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl">
+            <Card 
+              className={`p-6 text-center cursor-pointer transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl ${
+                activeFilter === 'cancelled' 
+                  ? 'bg-gradient-to-br from-red-100 to-red-200/50 dark:from-red-800/40 dark:to-red-700/30 border-red-400/60 dark:border-red-600/50 shadow-lg dark:shadow-xl' 
+                  : 'bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-900/30 dark:to-red-800/20 border-red-200/50 dark:border-red-800/40 hover:border-red-300/50 dark:hover:border-red-700/60'
+              } ${isFiltering ? 'opacity-75' : ''}`}
+              onClick={() => !isFiltering && handleFilterClick('cancelled')}
+            >
               <div className="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">{stats.cancelled}</div>
               <div className="text-sm font-medium text-muted-foreground">Cancelados</div>
+              {isFiltering && activeFilter === 'cancelled' && (
+                <motion.div
+                  className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full mx-auto mt-2"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+              )}
             </Card>
           </motion.div>
           
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="p-6 text-center bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 border-primary/20 dark:border-primary/30 hover:border-primary/40 dark:hover:border-primary/50 transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl">
+            <Card 
+              className={`p-6 text-center cursor-pointer transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl ${
+                activeFilter === 'today' 
+                  ? 'bg-gradient-to-br from-primary/20 to-primary/10 dark:from-primary/30 dark:to-primary/20 border-primary/50 dark:border-primary/40 shadow-lg dark:shadow-xl' 
+                  : 'bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 border-primary/20 dark:border-primary/30 hover:border-primary/40 dark:hover:border-primary/50'
+              } ${isFiltering ? 'opacity-75' : ''}`}
+              onClick={() => !isFiltering && handleFilterClick('today')}
+            >
               <div className="text-3xl font-bold text-primary mb-2">{stats.today}</div>
               <div className="text-sm font-medium text-muted-foreground">Hoje</div>
+              {isFiltering && activeFilter === 'today' && (
+                <motion.div
+                  className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full mx-auto mt-2"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+              )}
             </Card>
           </motion.div>
           
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            <Card className="p-6 text-center bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/30 dark:to-emerald-800/20 border-emerald-200/50 dark:border-emerald-800/40 hover:border-emerald-300/50 dark:hover:border-emerald-700/60 transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl">
+            <Card 
+              className={`p-6 text-center cursor-pointer transition-all duration-300 rounded-2xl shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-xl ${
+                activeFilter === 'thisWeek' 
+                  ? 'bg-gradient-to-br from-emerald-100 to-emerald-200/50 dark:from-emerald-800/40 dark:to-emerald-700/30 border-emerald-400/60 dark:border-emerald-600/50 shadow-lg dark:shadow-xl' 
+                  : 'bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/30 dark:to-emerald-800/20 border-emerald-200/50 dark:border-emerald-800/40 hover:border-emerald-300/50 dark:hover:border-emerald-700/60'
+              } ${isFiltering ? 'opacity-75' : ''}`}
+              onClick={() => !isFiltering && handleFilterClick('thisWeek')}
+            >
               <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">{stats.thisWeek}</div>
               <div className="text-sm font-medium text-muted-foreground">Esta Semana</div>
+              {isFiltering && activeFilter === 'thisWeek' && (
+                <motion.div
+                  className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full mx-auto mt-2"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+              )}
             </Card>
           </motion.div>
         </motion.div>
@@ -424,6 +674,39 @@ export function AppointmentsPage({ onBack }: AppointmentsPageProps) {
                 </Button>
               </motion.div>
             </div>
+            
+            {/* Indicador de filtro ativo */}
+            {activeFilter && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mt-4 p-3 bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 rounded-xl"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <span className="text-sm font-medium text-primary">
+                    Filtro ativo: {
+                      activeFilter === 'total' ? 'Total' :
+                      activeFilter === 'pending' ? 'Pendentes' :
+                      activeFilter === 'confirmed' ? 'Confirmados' :
+                      activeFilter === 'completed' ? 'Concluídos' :
+                      activeFilter === 'cancelled' ? 'Cancelados' :
+                      activeFilter === 'today' ? 'Hoje' :
+                      activeFilter === 'thisWeek' ? 'Esta Semana' : ''
+                    }
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveFilter(null)}
+                    className="ml-auto h-6 w-6 p-0 hover:bg-primary/20"
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              </motion.div>
+            )}
           </Card>
 
         </motion.div>
@@ -435,8 +718,25 @@ export function AppointmentsPage({ onBack }: AppointmentsPageProps) {
           initial="initial"
           animate="animate"
         >
+          {/* Loading durante filtro */}
+          {isFiltering && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center py-8"
+            >
+              <motion.div
+                className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              />
+              <p className="text-muted-foreground">Filtrando agendamentos...</p>
+            </motion.div>
+          )}
+
           <AnimatePresence>
-            {filteredAppointments.length === 0 ? (
+            {!isFiltering && filteredAppointments.length === 0 ? (
               <motion.div
                 className="text-center py-16"
                 initial={{ opacity: 0, y: 20 }}
@@ -474,7 +774,7 @@ export function AppointmentsPage({ onBack }: AppointmentsPageProps) {
                   </motion.div>
                 )}
               </motion.div>
-            ) : (
+            ) : !isFiltering && (
               filteredAppointments.map((appointment, index) => {
                 const statusConfig = getStatusConfig(appointment.status);
                 const StatusIcon = statusConfig.icon;
@@ -579,31 +879,49 @@ export function AppointmentsPage({ onBack }: AppointmentsPageProps) {
                           
                           {appointment.status === 'pending' && (
                             <motion.div
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
+                              whileHover={{ scale: isUpdating ? 1 : 1.1 }}
+                              whileTap={{ scale: isUpdating ? 1 : 0.9 }}
                             >
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleStatusChange(appointment.id, 'confirmed')}
-                                className="w-10 h-10 rounded-xl hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
+                                disabled={isUpdating}
+                                className="w-10 h-10 rounded-xl hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400 disabled:opacity-50 disabled:cursor-not-allowed"
                               >
-                                <CheckCircle className="w-4 h-4" />
+                                {isUpdating ? (
+                                  <motion.div
+                                    className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full"
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                  />
+                                ) : (
+                                  <CheckCircle className="w-4 h-4" />
+                                )}
                               </Button>
                             </motion.div>
                           )}
                           
                           <motion.div
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
+                            whileHover={{ scale: isUpdating ? 1 : 1.1 }}
+                            whileTap={{ scale: isUpdating ? 1 : 0.9 }}
                           >
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDeleteAppointment(appointment.id)}
-                              className="w-10 h-10 rounded-xl hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                              disabled={isUpdating}
+                              className="w-10 h-10 rounded-xl hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              {isUpdating ? (
+                                <motion.div
+                                  className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full"
+                                  animate={{ rotate: 360 }}
+                                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
                             </Button>
                           </motion.div>
                         </div>
