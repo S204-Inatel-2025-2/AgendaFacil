@@ -15,12 +15,32 @@ interface HeaderProps {
 export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { t } = useLanguage();
   const { user, isAuthenticated, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    toast.success('👋 Logout realizado com sucesso! Até logo!');
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      // Mostrar toast de loading
+      toast.loading('🔄 Fazendo logout...', { id: 'logout' });
+      
+      // Simular delay para mostrar o loading
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      logout();
+      toast.success('👋 Logout realizado com sucesso! Até logo!', { id: 'logout' });
+      
+      // Scroll suave para o topo da página
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    } catch (error) {
+      toast.error('❌ Erro ao fazer logout. Tente novamente.', { id: 'logout' });
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   useEffect(() => {
@@ -50,16 +70,42 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
   ];
 
   return (
-    <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-background/80 backdrop-blur-xl border-b border-border shadow-sm' 
-          : 'bg-transparent'
-      }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-    >
+    <>
+      {/* Loading overlay durante logout */}
+      {isLoggingOut && (
+        <motion.div
+          className="fixed inset-0 z-50 bg-background/50 backdrop-blur-sm flex items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="bg-card p-6 rounded-2xl shadow-xl border border-border/50 text-center"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+          >
+            <motion.div
+              className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Fazendo logout...</h3>
+            <p className="text-sm text-muted-foreground">Redirecionando para a página inicial</p>
+          </motion.div>
+        </motion.div>
+      )}
+
+      <motion.header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled 
+            ? 'bg-background/80 backdrop-blur-xl border-b border-border shadow-sm' 
+            : 'bg-transparent'
+        } ${isLoggingOut ? 'pointer-events-none' : ''}`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -147,17 +193,26 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
                 </motion.div>
                 
                 <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: isLoggingOut ? 1 : 1.05 }}
+                  whileTap={{ scale: isLoggingOut ? 1 : 0.95 }}
                 >
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-300 cursor-pointer"
+                    disabled={isLoggingOut}
+                    className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleLogout}
                   >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sair
+                    {isLoggingOut ? (
+                      <motion.div
+                        className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full mr-2"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      />
+                    ) : (
+                      <LogOut className="w-4 h-4 mr-2" />
+                    )}
+                    {isLoggingOut ? 'Saindo...' : 'Sair'}
                   </Button>
                 </motion.div>
               </>
@@ -233,7 +288,9 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
-              className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border shadow-lg"
+              className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border shadow-lg ${
+                isLoggingOut ? 'pointer-events-none opacity-75' : ''
+              }`}
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -270,14 +327,23 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
                       
                       <Button
                         variant="outline"
-                        className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 cursor-pointer"
-                        onClick={() => {
+                        disabled={isLoggingOut}
+                        className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={async () => {
                           setIsMobileMenuOpen(false);
-                          handleLogout();
+                          await handleLogout();
                         }}
                       >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Sair
+                        {isLoggingOut ? (
+                          <motion.div
+                            className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full mr-2"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                        ) : (
+                          <LogOut className="w-4 h-4 mr-2" />
+                        )}
+                        {isLoggingOut ? 'Saindo...' : 'Sair'}
                       </Button>
                     </>
                   ) : (
@@ -313,5 +379,6 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
         </AnimatePresence>
       </nav>
     </motion.header>
+    </>
   );
 }
