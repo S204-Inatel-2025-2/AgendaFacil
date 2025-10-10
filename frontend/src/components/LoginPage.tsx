@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, Apple, Smartphone } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Apple, Smartphone, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -8,6 +8,7 @@ import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import { useLanguage } from './LanguageProvider';
 import { useAuth } from '../hooks/useAuth';
+import { ForgotPasswordPage } from './ForgotPasswordPage';
 import toast from 'react-hot-toast';
 
 interface LoginPageProps {
@@ -21,6 +22,7 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     senha: ''
@@ -100,6 +102,16 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
     }
   };
 
+  // Se estiver mostrando a página de recuperação de senha
+  if (showForgotPassword) {
+    return (
+      <ForgotPasswordPage
+        onBack={() => setShowForgotPassword(false)}
+        onBackToLogin={() => setShowForgotPassword(false)}
+      />
+    );
+  }
+
   return (
     <motion.div 
       className="min-h-screen bg-background relative overflow-hidden"
@@ -141,6 +153,22 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
 
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4 pt-18">
         <div className="w-full max-w-md">
+          {/* Back button */}
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Button
+              onClick={onBack}
+              variant="ghost"
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t.back_to_home}
+            </Button>
+          </motion.div>
 
           {/* Login card */}
           <motion.div variants={cardVariants}>
@@ -254,6 +282,7 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
                 <div className="flex justify-end">
                   <button
                     type="button"
+                    onClick={() => setShowForgotPassword(true)}
                     className="text-sm text-primary hover:text-primary/80 transition-colors"
                   >
                     {t.login_forgot_password}

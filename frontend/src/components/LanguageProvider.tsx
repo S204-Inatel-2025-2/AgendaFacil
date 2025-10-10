@@ -203,6 +203,21 @@ const translations = {
     register_terms_text: "Ao se cadastrar, você concorda com nossos",
     back_to_login: "Voltar ao login",
 
+    // Forgot Password Page
+    forgot_password_title: "Esqueceu sua senha?",
+    forgot_password_subtitle: "Digite seu email e enviaremos um link para redefinir sua senha",
+    forgot_password_email: "Email",
+    forgot_password_email_placeholder: "Digite seu email",
+    forgot_password_submit: "Enviar Link de Recuperação",
+    forgot_password_loading: "Enviando...",
+    forgot_password_back_to_login: "Lembrou da senha?",
+    forgot_password_login_link: "Fazer login",
+    forgot_password_success_title: "Email Enviado!",
+    forgot_password_success_message: "Enviamos um link de recuperação para",
+    forgot_password_success_instructions: "Verifique sua caixa de entrada e siga as instruções.",
+    forgot_password_back_to_login_button: "Voltar ao Login",
+    forgot_password_resend_button: "Enviar Novamente",
+
     // Time and Date
     monday: "Segunda",
     tuesday: "Terça",
