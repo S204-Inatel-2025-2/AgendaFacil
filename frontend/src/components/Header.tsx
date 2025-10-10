@@ -22,14 +22,12 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      // Mostrar toast de loading
-      toast.loading('🔄 Fazendo logout...', { id: 'logout' });
       
+      toast.success('👋 Logout realizado com sucesso! Até logo!', { id: 'logout' });
       // Simular delay para mostrar o loading
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 700));
       
       logout();
-      toast.success('👋 Logout realizado com sucesso! Até logo!', { id: 'logout' });
       
       // Scroll suave para o topo da página
       window.scrollTo({
