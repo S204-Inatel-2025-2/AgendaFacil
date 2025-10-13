@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class ServiceDTO {
+public class ServicoDTO {
     
     private String nome;
     private String categoria;
