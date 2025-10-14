@@ -10,6 +10,7 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "users")
 public class User {
     private @Id @GeneratedValue Long id;
