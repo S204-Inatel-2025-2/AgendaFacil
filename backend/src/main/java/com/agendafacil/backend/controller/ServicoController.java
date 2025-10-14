@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.agendafacil.backend.DTO.ServicoDTO;
@@ -43,7 +44,7 @@ public class ServicoController {
         return servicoService.findByCategoria(categoria);
     }
 
-    @GetMapping("/{nome}")
+    @GetMapping("/nome/{nome}")
     public Optional<Servico> getServicoByNome(@PathVariable String nome){
         return servicoService.findByNome(nome);
     }
@@ -51,5 +52,10 @@ public class ServicoController {
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id){
         servicoService.deletar(id);
+    }
+    
+    @PostMapping("/{id}/reservar")
+    public Servico reservarServico(@PathVariable Long id, @RequestParam Long userId){
+        return servicoService.reservarServico(id, userId);
     }
 }
