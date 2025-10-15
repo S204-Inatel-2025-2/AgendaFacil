@@ -28,4 +28,8 @@ public class User {
         this.telefone = telefone;
         this.senha = senha;
     }
+
+    public void set_nome_completo(String nome_completo) {
+        this.nome_completo = nome_completo;
+    }
 }
