@@ -1,7 +1,6 @@
 package com.agendafacil.backend.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,7 +34,7 @@ public class ServicoController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Servico> getServicoById(@PathVariable Long id){
+    public Servico getServicoById(@PathVariable Long id){
         return servicoService.findById(id);
     }
 
@@ -45,7 +44,7 @@ public class ServicoController {
     }
 
     @GetMapping("/nome/{nome}")
-    public Optional<Servico> getServicoByNome(@PathVariable String nome){
+    public Servico getServicoByNome(@PathVariable String nome){
         return servicoService.findByNome(nome);
     }
 

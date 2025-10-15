@@ -9,4 +9,5 @@ import com.agendafacil.backend.model.Servico;
 public interface ServicoRepository extends JpaRepository<Servico, Long>{
     Optional<Servico> findByNome(String nome);
     List<Servico> findByCategoria(String categoria);
+    List<Servico> findByAgendadoFalse();
 }
