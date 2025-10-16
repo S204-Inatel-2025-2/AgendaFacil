@@ -37,32 +37,23 @@ public class UserController {
 
     @GetMapping("/users")
     public List<User> getAllUsers() {
-    return userService.findAll();
-}
+        return userService.findAll();
+    }
 
-    @GetMapping("/oauth2/success")
-    public ResponseEntity<?> oauth2Success(Authentication authentication) {
-        System.out.println("=== DEBUG OAUTH2 ===");
-        System.out.println("Authentication: " + authentication);
-        System.out.println("Authentication type: " + (authentication != null ? authentication.getClass().getName() : "NULL"));
+    // Endpoint para obter a URL de OAuth2 (útil para o frontend)
+    @GetMapping("/auth/oauth-urls")
+    public ResponseEntity<?> getOAuthUrls() {
+        return ResponseEntity.ok().body(Map.of(
+                "google", "/oauth2/authorization/google"
+        ));
+    }
 
-        if (authentication instanceof OAuth2AuthenticationToken) {
-            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-            System.out.println("OAuth2 Token: " + oauthToken);
-
-            OAuth2User oauth2User = oauthToken.getPrincipal();
-            System.out.println("OAuth2 User: " + oauth2User);
-
-            if (oauth2User != null) {
-                System.out.println("User Attributes: " + oauth2User.getAttributes());
-                return userService.processOAuth2User(oauth2User);
-            } else {
-                System.out.println("OAuth2User é NULL!");
-            }
-        } else {
-            System.out.println("Authentication NÃO é OAuth2AuthenticationToken");
+    // Endpoint para debug - mostra informações do usuário atual
+    @GetMapping("/auth/me")
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal OAuth2User principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Não autenticado");
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Autenticação OAuth2 falhou");
+        return ResponseEntity.ok().body(principal.getAttributes());
     }
 }

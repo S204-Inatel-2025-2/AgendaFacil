@@ -31,7 +31,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (path.startsWith("/login/oauth2") || path.startsWith("/oauth2") || path.startsWith("/login") || path.startsWith("/error")) {
+        // Rotas públicas - não requerem autenticação JWT
+        if (path.startsWith("/auth/") ||
+                path.startsWith("/login/oauth2") ||
+                path.startsWith("/oauth2") ||
+                path.startsWith("/login") ||
+                path.startsWith("/error") ||
+                path.startsWith("/register") ||
+                path.equals("/users")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -43,7 +50,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         } catch (Exception ex) {
-            // ex.printStackTrace();
+            System.out.println("Erro no JWT Filter: " + ex.getMessage());
         }
 
         filterChain.doFilter(request, response);

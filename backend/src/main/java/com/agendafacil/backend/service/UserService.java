@@ -32,14 +32,8 @@ public class UserService {
 
     public User login(String email, String senha) throws Exception{
         Optional<User> userOpt = userRepository.findByEmail(email);
-        System.out.println("Email do usuário: " + userOpt.get().getEmail());
-        System.out.println("Email enviado: " + email);
-        System.out.println("Senha do usuário: " + userOpt.get().getSenha());
-        System.out.println("Senha enviada: " + senha);
 
-        System.out.println("Usuário encontrado: " + userOpt);
         if (userOpt.isEmpty() || !userOpt.get().getSenha().equals(senha)){
-            //throw new Exception("Email ou senha inválidos");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou senha inválidos");
         }
 
@@ -47,6 +41,8 @@ public class UserService {
     }
 
     public ResponseEntity<?> processOAuth2User(OAuth2User oauth2User) {
+        System.out.println("=== PROCESSING OAUTH2 USER ===");
+
         if (oauth2User == null) {
             return ResponseEntity.badRequest().body("Dados do usuário OAuth2 não disponíveis");
         }
@@ -54,12 +50,15 @@ public class UserService {
         String email = oauth2User.getAttribute("email");
         String name = oauth2User.getAttribute("name");
 
+        System.out.println("Email from OAuth2: " + email);
+        System.out.println("Name from OAuth2: " + name);
+
         if (email == null || email.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Email não encontrado nos dados do OAuth2");
         }
 
         if (name == null || name.trim().isEmpty()) {
-            name = "Usuário";
+            name = "Usuário Google";
         }
 
         Optional<User> userOpt = userRepository.findByEmail(email);
@@ -67,12 +66,17 @@ public class UserService {
         User user;
         if (userOpt.isPresent()) {
             user = userOpt.get();
+            System.out.println("Usuário encontrado (LOGIN): " + user.getEmail());
         } else {
-            user = new User(name, email, "", "");
+            // Cria novo usuário para REGISTRO
+            user = new User(name, email, "", "oauth2_user");
             user = userRepository.save(user);
+            System.out.println("Novo usuário criado (REGISTRO): " + user.getEmail());
         }
 
         String token = jwtTokenProvider.gerarToken(email);
+        System.out.println("Token JWT gerado: " + token);
+
         return ResponseEntity.ok().body(java.util.Map.of(
                 "token", token,
                 "user", user
