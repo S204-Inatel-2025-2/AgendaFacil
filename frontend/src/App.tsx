@@ -106,8 +106,69 @@ function ApplePageTransition({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Apple-style Redirecting Screen
+function RedirectingScreen() {
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background"
+      initial={{ opacity: 1 }}
+      exit={{ 
+        opacity: 0,
+        scale: 1.05,
+      }}
+      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+    >
+      <div className="text-center">
+        {/* Apple-style loading ring */}
+        <motion.div
+          className="relative w-16 h-16 mx-auto mb-8"
+        >
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-muted"
+          />
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div
+            className="absolute inset-2 rounded-full bg-gradient-to-br from-primary to-emerald-600 opacity-20"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.2, 0.4, 0.2]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+        >
+          <motion.h2
+            className="text-xl mb-2 font-semibold text-foreground"
+          >
+            Redirecionando...
+          </motion.h2>
+          <motion.p
+            className="text-muted-foreground text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            Você precisa fazer login para acessar seus agendamentos
+          </motion.p>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail' | 'appointments'>('home');
   const [currentServiceCategory, setCurrentServiceCategory] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
@@ -120,6 +181,27 @@ function AppContent() {
   const handleCompanySelect = (company: any) => {
     setSelectedCompany(company);
     setCurrentPage('service-detail');
+  };
+
+  const handleAppointmentsClick = async () => {
+    // Simular verificação de autenticação
+    const isAuthenticated = localStorage.getItem('user') !== null;
+    
+    if (!isAuthenticated) {
+      setIsRedirecting(true);
+      
+      // Simular delay de redirecionamento
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setIsRedirecting(false);
+      setCurrentPage('login');
+    } else {
+      setCurrentPage('appointments');
+    }
+  };
+
+  const handleLogoutClick = () => {
+    setCurrentPage('home');
   };
 
   useEffect(() => {
@@ -177,6 +259,7 @@ function AppContent() {
     <div className="min-h-screen relative bg-background">
       <AnimatePresence mode="wait">
         {isLoading && <AppleLoadingScreen key="loading" />}
+        {isRedirecting && <RedirectingScreen key="redirecting" />}
       </AnimatePresence>
 
     {/* ✅ Header fixo em todas as páginas */}
@@ -184,7 +267,8 @@ function AppContent() {
         <Header 
           onLoginClick={() => setCurrentPage('login')}
           onRegisterClick={() => setCurrentPage('register')}
-          onAppointmentsClick={() => setCurrentPage('appointments')}
+          onAppointmentsClick={handleAppointmentsClick}
+          onLogoutClick={handleLogoutClick}
         />
       )}
 

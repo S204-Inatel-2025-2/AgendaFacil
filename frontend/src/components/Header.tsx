@@ -10,9 +10,10 @@ interface HeaderProps {
   onLoginClick?: () => void;
   onRegisterClick?: () => void;
   onAppointmentsClick?: () => void;
+  onLogoutClick?: () => void;
 }
 
-export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: HeaderProps) {
+export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onLogoutClick }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -28,6 +29,9 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
       await new Promise(resolve => setTimeout(resolve, 700));
       
       logout();
+      
+      // Redirecionar para a home
+      onLogoutClick?.();
       
       // Scroll suave para o topo da página
       window.scrollTo({
@@ -51,11 +55,6 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
   }, []);
 
   const handleAppointmentsClick = () => {
-    if (!isAuthenticated) {
-      toast.error('Você precisa fazer login para acessar seus agendamentos');
-      onLoginClick?.();
-      return;
-    }
     onAppointmentsClick?.();
   };
 
