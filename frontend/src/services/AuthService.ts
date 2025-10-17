@@ -12,6 +12,15 @@ export interface RegisterRequest {
   senha: string;
 }
 
+export interface EmpresaRegisterRequest {
+  nome: string;
+  razao_social: string;
+  cnpj: string;
+  email: string;
+  telefone: string;
+  senha: string;
+}
+
 export interface User {
   id: number;
   nome_completo: string;
