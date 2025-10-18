@@ -48,6 +48,7 @@ interface ServiceManagementProps {
   onServicesUpdate: (services: Service[]) => void;
   isProviderMode: boolean;
   companyName: string;
+  onSchedule?: (service: Service, time: string) => void; 
 }
 
 interface ServiceFormData {
@@ -104,7 +105,8 @@ export function ServiceManagement({
   services, 
   onServicesUpdate, 
   isProviderMode, 
-  companyName 
+  companyName, 
+  onSchedule
 }: ServiceManagementProps) {
   const [isAddingService, setIsAddingService] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
@@ -155,6 +157,20 @@ export function ServiceManagement({
     resetForm();
     toast.success('Serviço adicionado com sucesso!');
   };
+
+  const handleBookSlot = (serviceId: string, slotId: string) => {
+  const service = services.find((s) => s.id === serviceId);
+  const slot = service?.timeSlots?.find((s) => s.id === slotId);
+
+  if (service && slot) {
+    if (onSchedule) {
+      onSchedule(service, slot.time); 
+    } else {
+      toast.success(`Agendamento solicitado para ${service.name} às ${slot.time}`);
+    }
+  }
+  };
+
 
   const handleEditService = (service: Service) => {
     setEditingService(service);
@@ -209,15 +225,6 @@ export function ServiceManagement({
     
     onServicesUpdate(updatedServices);
     toast.success('Horário atualizado!');
-  };
-
-  const handleBookSlot = (serviceId: string, slotId: string) => {
-    const service = services.find(s => s.id === serviceId);
-    const slot = service?.timeSlots?.find(s => s.id === slotId);
-    
-    if (service && slot) {
-      toast.success(`Agendamento solicitado para ${service.name} às ${slot.time}`);
-    }
   };
 
   const getAvailableSlotsForDate = (service: Service, date: string) => {
@@ -831,7 +838,10 @@ export function ServiceManagement({
                                               }` 
                                             : "bg-muted hover:bg-muted/80 border-muted-foreground/20"
                                         }`}
-                                        onClick={() => handleTimeSlotToggle(service.id, slot.id)}
+                                        onClick={() => {
+                                          handleTimeSlotToggle(service.id, slot.id);
+                                          setIsScheduleOpen(true);
+                                        }}
                                       >
                                         <span className="text-sm font-medium">{slot.time}</span>
                                         <div className="flex items-center gap-1">
@@ -922,6 +932,9 @@ export function ServiceManagement({
           </AnimatePresence>
         </div>
 
+          
+
+        <Card className="p-8">
         {services.length === 0 && (
           <div className="text-center py-12">
             <div className="flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mx-auto mb-4">
@@ -939,7 +952,7 @@ export function ServiceManagement({
         )}
       </Card>
 
-      {/* Quick Stats */}
+            {/* Quick Stats */}
       {services.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="p-6">
@@ -975,7 +988,9 @@ export function ServiceManagement({
               </div>
               <div>
                 <h4 className="font-semibold">
-                  {formatDuration(Math.round(services.reduce((acc, s) => acc + s.duration, 0) / services.length))}
+                  {formatDuration(Math.round(
+                    services.reduce((acc, s) => acc + s.duration, 0) / services.length
+                  ))}
                 </h4>
                 <p className="text-sm text-muted-foreground">Duração Média</p>
               </div>
@@ -983,6 +998,7 @@ export function ServiceManagement({
           </Card>
         </div>
       )}
-    </div>
-  );
+    </Card>
+  </div>
+);
 }

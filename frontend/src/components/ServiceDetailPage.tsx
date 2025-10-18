@@ -19,7 +19,9 @@ import {
   Check, 
   Share2, 
   Facebook, 
-  Twitter,  
+  Twitter,
+  Scissors,
+  User,  
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -32,6 +34,7 @@ import { useLanguage } from './LanguageProvider';
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { toast } from "react-hot-toast";
 import { FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
+import {serviceCategories} from './serviceData';
 
 interface Service {
   id: string;
@@ -48,6 +51,7 @@ interface TimeSlot {
   time: string;
   available: boolean;
   serviceId?: string;
+  
 }
 
 interface Company {
@@ -79,6 +83,9 @@ export function ServiceDetailPage({
   gradient 
 }: ServiceDetailPageProps) {
   const { t } = useLanguage();
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [isProviderMode, setIsProviderMode] = useState(false);
   
@@ -127,6 +134,12 @@ export function ServiceDetailPage({
       toast("Removido dos favoritos", { duration: 1000, position: "top-right" });
     }
   };
+
+  const handleOpenConfirm = (service: Service, time: string) => {
+  setSelectedService(service);
+  setSelectedTime(time);
+  setIsConfirmOpen(true);
+};
 
   // Generate time slots for a service
   // essa parte vai ser o prestador quem vai configurar
@@ -428,8 +441,10 @@ export function ServiceDetailPage({
               onServicesUpdate={handleServiceUpdate}
               isProviderMode={isProviderMode}
               companyName={company.name}
+              onSchedule={handleOpenConfirm}
             />
           </TabsContent>
+
 
 
 
@@ -587,6 +602,105 @@ export function ServiceDetailPage({
           </motion.div>
         )}
       </AnimatePresence>
+
+        <AnimatePresence>
+    {isConfirmOpen && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white rounded-2xl shadow-2xl w-[90%] max-w-md overflow-hidden"
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center p-4 border-b">
+            <h2 className="text-lg font-semibold">Confirmar agendamento</h2>
+            <button
+              onClick={() => setIsConfirmOpen(false)}
+              className="text-gray-500 hover:text-gray-800"
+            >
+              <X className="w-5 h-5 cursor-pointer" />
+            </button>
+          </div>
+
+          {/* Conteúdo */}
+          <div className="p-6 space-y-5 text-gray-700">
+            <div>
+              <p className="font-medium text-gray-900">
+                Agendamento para {selectedService?.name}
+              </p>
+              <p className="text-sm text-gray-500">{selectedTime}</p>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <MapPin className="w-5 h-5 text-orange-500 mt-1" />
+              <div>
+                <p className="font-semibold">Corella Esmalteria & Beauty Club</p>
+                <p className="text-sm text-gray-500">
+                  Avenida Vereador Antonio Augusto Ribeiro, 166, Jd. Sta. Elisa
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-start border-t pt-3">
+              <div className="flex items-start gap-3">
+                <Scissors className="w-5 h-5 text-orange-500 mt-1" />
+                <div>
+                  <p className="font-semibold">Pedicure</p>
+                  <p className="text-sm text-gray-500">
+                    Cutilação e esmaltação das unhas dos pés.
+                  </p>
+                </div>
+              </div>
+              <p className="text-gray-900 font-semibold">R$ 40</p>
+            </div>
+
+            {/* Campo de comentário */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Quer deixar um comentário? (opcional)
+              </label>
+              <textarea
+                rows={3}
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 outline-none resize-none"
+                placeholder="Escreva algo..."
+                maxLength={400}
+              />
+              <p className="text-xs text-gray-400 text-right">0 de 400 caracteres</p>
+            </div>
+
+            {/* Cupom */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Código de cupom</label>
+              <input
+                type="text"
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
+                placeholder="Digite aqui"
+              />
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="border-t p-4 bg-gray-50">
+            <Button
+              onClick={() => {
+                toast.success("Agendamento confirmado!");
+                setIsConfirmOpen(false);
+              }}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg"
+            >
+              Agendar
+            </Button>
+          </div>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
     </motion.div>
   );
 }
