@@ -34,7 +34,6 @@ import { useLanguage } from './LanguageProvider';
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { toast } from "react-hot-toast";
 import { FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
-import {serviceCategories} from './serviceData';
 
 interface Service {
   id: string;
@@ -51,7 +50,6 @@ interface TimeSlot {
   time: string;
   available: boolean;
   serviceId?: string;
-  
 }
 
 interface Company {
@@ -631,33 +629,38 @@ export function ServiceDetailPage({
           {/* Conteúdo */}
           <div className="p-6 space-y-5 text-gray-700">
             <div>
-              <p className="font-medium text-gray-900">
-                Agendamento para {selectedService?.name}
-              </p>
+               <p className="font-medium text-gray-900">
+              {new Date().toLocaleDateString("pt-BR", {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+            </p>
               <p className="text-sm text-gray-500">{selectedTime}</p>
             </div>
 
             <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-orange-500 mt-1" />
+              <MapPin className="w-5 h-5 text-green-600 mt-1" />
               <div>
-                <p className="font-semibold">Corella Esmalteria & Beauty Club</p>
+                <p className="font-semibold">{company.name}</p>
                 <p className="text-sm text-gray-500">
-                  Avenida Vereador Antonio Augusto Ribeiro, 166, Jd. Sta. Elisa
+                  {company.location}
                 </p>
               </div>
             </div>
 
             <div className="flex justify-between items-start border-t pt-3">
               <div className="flex items-start gap-3">
-                <Scissors className="w-5 h-5 text-orange-500 mt-1" />
+                <Scissors className="w-5 h-5 text-green-600 mt-1" />
                 <div>
-                  <p className="font-semibold">Pedicure</p>
+                  <p className="font-semibold">{selectedService?.name}</p>
                   <p className="text-sm text-gray-500">
-                    Cutilação e esmaltação das unhas dos pés.
+                    {selectedService?.description}
                   </p>
                 </div>
               </div>
-              <p className="text-gray-900 font-semibold">R$ 40</p>
+              <p className="text-gray-900 font-semibold">R$ {selectedService?.price}</p>
             </div>
 
             {/* Campo de comentário */}
@@ -692,7 +695,7 @@ export function ServiceDetailPage({
                 toast.success("Agendamento confirmado!");
                 setIsConfirmOpen(false);
               }}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg"
+              className="w-full bg-primary hover:bg-esmerald-600/10 text-white font-semibold py-3 rounded-lg"
             >
               Agendar
             </Button>
