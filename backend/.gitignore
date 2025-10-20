@@ -33,7 +33,7 @@ build/
 .vscode/
 
 # Secrets
+application-dev.properties
 .env
 *.env
-.env.*
-application-secrets.properties
+*.log

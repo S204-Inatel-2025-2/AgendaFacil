@@ -6,10 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Data 
+@Data
 public class UserDTO {
-
-    private String nome_completo;
+    private String nomeCompleto; // camelCase
     private String email;
     private String telefone;
     private String senha;
