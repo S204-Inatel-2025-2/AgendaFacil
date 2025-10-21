@@ -5,37 +5,51 @@ on:
     branches: ["main", "dev"]
   pull_request:
     branches: ["main", "dev"]
-  workflow_dispatch: # permite rodar manualmente no GitHub Actions
-
-# Executa testes E2E (Cypress) no Frontend
+  workflow_dispatch:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
 
     steps:
-      # Preparar ambiente
+      # Checkout do código
       - name: Checkout código
         uses: actions/checkout@v4
 
-      # Instala Node.js 20 (mesma versão usada no Dockerfile do front)
+      # Instalar Docker Compose
+      - name: Instalar Docker Compose
+        run: sudo apt-get update && sudo apt-get install -y docker-compose
+
+      # Subir ambiente backend + db com Docker Compose (versão CI)
+      - name: Subir ambiente de teste (DB + Backend)
+        run: docker-compose -f docker-compose.ci.yaml up -d db backend
+
+      #  Aguardar backend iniciar
+      - name: Esperar backend responder
+        run: |
+          echo "Aguardando backend iniciar..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000/actuator/health | grep '"status":"UP"' > /dev/null; then
+              echo "Backend está online!"
+              break
+            fi
+            echo "Tentativa $i/30..."
+            sleep 5
+          done
+
+      # Configurar e buildar o frontend
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # Instala dependências do frontend de forma limpa
-      - name: Instalar dependências
+      - name: Instalar dependências e buildar frontend
         working-directory: ./frontend
-        run: npm ci
+        run: |
+          npm ci
+          npm run build
 
-      # Build do Frontend
-      - name: Build frontend
-        working-directory: ./frontend
-        run: npm run build
-
-      # Executar testes Cypress
-      # O Cypress já inicia o servidor local e aguarda o carregamento
-      - name: Rodar testes Cypress
+      #  Executar testes Cypress
+      - name: Rodar testes Cypress (com backend ativo)
         uses: cypress-io/github-action@v6
         with:
           working-directory: ./frontend
@@ -44,10 +58,9 @@ jobs:
           wait-on: "http://localhost:5173"
           wait-on-timeout: 60
 
-      # Salvar artefatos
-      # Salva vídeos e screenshots (caso gerados em falhas)
+      #  Salvar artefatos dos testes
       - name: Salvar artefatos do Cypress
-        if: always()  # executa mesmo se o teste falhar
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-results
@@ -56,18 +69,15 @@ jobs:
             frontend/cypress/screenshots
           retention-days: 7
 
-      # Salva o build do frontend (dist/)
-      - name: Salvar build do frontend
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-dist
-          path: frontend/dist
-          retention-days: 3
+      # Derrubar containers ao final
+      - name: Derrubar containers
+        if: always()
+        run: docker-compose -f docker-compose.ci.yaml down
 
-# Build e push das imagens Docker para o GHCR
+  #  Build e push das imagens para o GitHub Container Registry
   build-and-push:
     runs-on: ubuntu-latest
-    needs: test-and-build  # só executa se os testes passarem
+    needs: test-and-build
     permissions:
       contents: read
       packages: write
@@ -76,7 +86,6 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
 
-      # Login no GitHub Container Registry (GHCR)
       - name: Login no GHCR
         uses: docker/login-action@v3
         with:
@@ -84,24 +93,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build e Push do FRONTEND
-      - name: Build imagem FRONTEND
+      # FRONTEND
+      - name: Build e Push do FRONTEND
         run: |
           docker build -t ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ./frontend
-          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/frontend:latest
-
-      - name: Push imagem FRONTEND
-        run: |
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA}
+          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/frontend:latest
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/frontend:latest
 
-      # Build e Push do BACKEND
-      - name: Build imagem BACKEND (Spring Boot)
+      # BACKEND
+      - name: Build e Push do BACKEND
         run: |
           docker build -t ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ./backend
-          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
-
-      - name: Push imagem BACKEND
-        run: |
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA}
+          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
