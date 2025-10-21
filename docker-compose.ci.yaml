@@ -3,6 +3,7 @@ version: "3.9"
 services:
   db:
     image: postgres:15
+    container_name: agenda_db
     restart: always
     environment:
       POSTGRES_USER: usuario
@@ -10,14 +11,18 @@ services:
       POSTGRES_DB: meu_banco
     ports:
       - "5432:5432"
+    # IMPORTANTE: Usa o bind mount local. Lembre-se de deletar 'postgres_data'
+    # em caso de falha de esquema: Remove-Item -Recurse -Force ./postgres_data
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     networks:
       - app_net
 
   backend:
+    # Garante que as mudanças locais (ex: ddl-auto=create) sejam usadas
     build:
       context: ./backend
+    container_name: agenda_backend
     restart: always
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/meu_banco
@@ -27,12 +32,26 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    # CORREÇÃO: Espera a porta 5432 abrir
+    # Requer que o 'nc' (netcat) esteja instalado no seu Dockerfile do backend.
+    # Se 'nc' não estiver disponível, substitua por 'sleep 15' temporariamente.
+    command: >
+      /bin/sh -c "
+        echo 'Aguardando DB...';
+        while ! nc -z db 5432; do
+          sleep 1;
+        done;
+        echo 'DB pronto. Iniciando backend.';
+        java -jar /app/app.jar
+      "
     networks:
       - app_net
 
   frontend:
+    # Garante o build local para o frontend
     build:
       context: ./frontend
+    container_name: agenda_frontend
     restart: always
     ports:
       - "4200:80"
