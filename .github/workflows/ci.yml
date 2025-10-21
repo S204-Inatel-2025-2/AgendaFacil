@@ -68,7 +68,6 @@ jobs:
 
           echo "Exibindo registros da tabela 'usuarios'..."
           docker exec postgres_container psql -U usuario -d meu_banco -c "SELECT * FROM usuarios LIMIT 10;"
-          }
 
           echo "Consulta realizada com sucesso."
 
