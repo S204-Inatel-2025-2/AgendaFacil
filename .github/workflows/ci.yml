@@ -50,6 +50,36 @@ jobs:
           npm ci
           npm run build
 
+      # Verificar se a tabela 'usuarios' existe e exibir dados
+      - name: Verificar banco e tabela 'usuarios'
+        run: |
+          echo "Aguardando o PostgreSQL inicializar..."
+          for i in {1..5}; do
+            if docker exec postgres_container pg_isready -U usuario -d meu_banco > /dev/null 2>&1; then
+              echo "Banco disponível!"
+              break
+            fi
+            echo "Tentativa $i: aguardando banco..."
+            sleep 3
+          done
+
+          echo "Verificando se a tabela 'usuarios' existe..."
+          EXISTE=$(docker exec postgres_container psql -U usuario -d meu_banco -tAc "SELECT to_regclass('public.usuarios');")
+          if [ "$EXISTE" = "public.usuarios" ]; then
+            echo "Tabela 'usuarios' encontrada."
+          else
+            echo "Tabela 'usuarios' não existe!"
+            exit 1
+          fi
+
+          echo "Exibindo registros da tabela 'usuarios'..."
+          docker exec postgres_container psql -U usuario -d meu_banco -c "TABLE public.usuarios;" || {
+            echo "Erro ao consultar dados da tabela 'usuarios'."
+            exit 1
+          }
+
+          echo "Consulta realizada com sucesso."
+
       #  Executar testes Cypress
       - name: Rodar testes Cypress (com backend ativo)
         uses: cypress-io/github-action@v6
