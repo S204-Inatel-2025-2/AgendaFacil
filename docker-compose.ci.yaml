@@ -30,6 +30,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: senha
        # Força o Hibernate a criar o schema do zero no CI
       SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      SPRING_OUTPUT_ANSI_ENABLED: always
+      SPRING_MAIN_BANNER_MODE: off
+      
     ports:
       - "3000:3000"
     depends_on:
@@ -37,12 +40,11 @@ services:
     # CORREÇÃO: Espera a porta 5432 abrir
     # Requer que o 'nc' (netcat) esteja instalado no seu Dockerfile do backend.
     # Se 'nc' não estiver disponível, substitua por 'sleep 15' temporariamente.
+    # Espera o Postgres estabilizar antes de iniciar o Spring Boot
     command: >
       /bin/sh -c "
-        echo 'Aguardando DB...';
-        while ! nc -z db 5432; do
-          sleep 1;
-        done;
+        echo 'Aguardando DB por 10 segundos...';
+        sleep 10;
         echo 'DB pronto. Iniciando backend.';
         java -jar /app/app.jar
       "
