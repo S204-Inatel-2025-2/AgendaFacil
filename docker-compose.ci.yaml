@@ -14,7 +14,7 @@ services:
     # IMPORTANTE: Usa o bind mount local. Lembre-se de deletar 'postgres_data'
     # em caso de falha de esquema: Remove-Item -Recurse -Force ./postgres_data
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - /var/lib/postgresql/data
     networks:
       - app_net
 
@@ -28,6 +28,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/meu_banco
       SPRING_DATASOURCE_USERNAME: usuario
       SPRING_DATASOURCE_PASSWORD: senha
+       # Força o Hibernate a criar o schema do zero no CI
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create
     ports:
       - "3000:3000"
     depends_on:
