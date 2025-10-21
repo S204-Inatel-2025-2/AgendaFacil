@@ -79,7 +79,6 @@ jobs:
   #  Build e push das imagens para o GitHub Container Registry
   build-and-push:
     runs-on: ubuntu-latest
-    needs: test-and-build
     permissions:
       contents: read
       packages: write
