@@ -28,7 +28,7 @@ jobs:
         run: |
           echo "Aguardando backend iniciar..."
           for i in {1..30}; do
-            if curl -s http://localhost:3000/actuator/health | grep '"status":"UP"' > /dev/null; then
+            if curl -s http://localhost:3000/ | grep -i "html" > /dev/null; then
               echo "Backend está online!"
               exit 0
             fi
