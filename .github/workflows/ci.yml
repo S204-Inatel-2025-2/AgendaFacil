@@ -23,22 +23,6 @@ jobs:
       - name: Subir ambiente de teste (DB + Backend)
         run: docker-compose -f docker-compose.ci.yaml up -d db backend
 
-      #  Aguardar backend iniciar
-      - name: Esperar backend responder
-        run: |
-          echo "Aguardando backend iniciar..."
-          for i in {1..30}; do
-            if curl -s http://localhost:3000/ | grep -i "html" > /dev/null; then
-              echo "Backend está online!"
-              exit 0
-            fi
-            echo "Tentativa $i/30..."
-            sleep 5
-          done
-          echo "Backend não respondeu após 30 tentativas."
-          exit 1
-
-
       #  Mostrar logs do backend (debug)    
       - name: Mostrar logs do backend (debug)
         if: always()
