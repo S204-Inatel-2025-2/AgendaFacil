@@ -30,7 +30,7 @@ jobs:
           for i in {1..30}; do
             if curl -s http://localhost:3000/actuator/health | grep '"status":"UP"' > /dev/null; then
               echo "Backend está online!"
-              break
+              exit 0
             fi
             echo "Tentativa $i/30..."
             sleep 5
@@ -42,7 +42,17 @@ jobs:
       #  Mostrar logs do backend (debug)    
       - name: Mostrar logs do backend (debug)
         if: always()
-        run: docker logs $(docker ps -qf "name=agenda_backend")    
+        run: |
+            echo "=== Containers em execução ==="
+            docker ps -a
+            echo "=== Logs do backend ==="
+            ID=$(docker ps -aqf "name=backend" || true)
+            if [ -n "$ID" ]; then
+              docker logs "$ID" || true
+            else
+              echo "Nenhum container do backend encontrado!"
+              docker ps -a
+            fi    
 
       # Configurar e buildar o frontend
       - name: Configurar Node.js
