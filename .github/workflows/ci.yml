@@ -7,24 +7,23 @@ on:
     branches: ["main", "dev"]
   workflow_dispatch: # permite rodar manualmente no GitHub Actions
 
-
-#Executa testes E2E (Cypress) no Frontend
+# Executa testes E2E (Cypress) no Frontend
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
 
     steps:
-      # Prepara ambiente
+      # Preparar ambiente
       - name: Checkout código
         uses: actions/checkout@v4
 
-      # Instala Node.js (mesma versão usada no Dockerfile do front)
+      # Instala Node.js 20 (mesma versão usada no Dockerfile do front)
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # Instala dependências do frontend de forma limpa (npm ci)
+      # Instala dependências do frontend de forma limpa
       - name: Instalar dependências
         working-directory: ./frontend
         run: npm ci
@@ -34,14 +33,8 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
-      # Inicia o servidor local para servir o build e testar com Cypress
-      - name: Iniciar servidor local
-        working-directory: ./frontend
-        run: |
-          npx http-server dist -p 5173 &
-          sleep 5
-
       # Executar testes Cypress
+      # O Cypress já inicia o servidor local e aguarda o carregamento
       - name: Rodar testes Cypress
         uses: cypress-io/github-action@v6
         with:
@@ -50,10 +43,9 @@ jobs:
           start: npx http-server dist -p 5173
           wait-on: "http://localhost:5173"
           wait-on-timeout: 60
-          command: npx cypress run --browser chrome
 
       # Salvar artefatos
-      # Salva os vídeos e screenshots do Cypress para análise posterior
+      # Salva vídeos e screenshots (caso gerados em falhas)
       - name: Salvar artefatos do Cypress
         if: always()  # executa mesmo se o teste falhar
         uses: actions/upload-artifact@v4
