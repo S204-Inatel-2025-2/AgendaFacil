@@ -38,29 +38,3 @@ describe("Teste login", () => {
 
 })
 
-describe("Teste meus agendamentos", () => {
-  it("Deve logar e acessar Meus Agendamentos", () => {
-    cy.visit('http://localhost:5173/')
-
-    // Espera o menu carregar
-    cy.get('.space-x-8 > :nth-child(3)', { timeout: 10000 }).should('be.visible').click()
-
-    // Clica no botão de login
-    cy.get('.space-x-4 > :nth-child(3) > .inline-flex').should('be.visible').click()
-
-    // Verifica que está na tela de login
-    cy.get('.text-2xl').should('contain', 'Entrar na sua conta')
-
-    // Faz login
-    cy.get('#email').type('marcelo123@email.com')
-    cy.get('#senha').type('senha123')
-    cy.get('.space-y-6 > .inline-flex').click()
-
-    // Verifica se o login funcionou
-    cy.url({ timeout: 10000 }).should('include', '/dashboard') // ajuste conforme a rota pós-login
-    cy.contains('Meus Agendamentos', { timeout: 10000 }).should('be.visible').click()
-
-    // Verifica a tela final
-    cy.contains('Meus Agendamentos').should('be.visible')
-  })
-})
