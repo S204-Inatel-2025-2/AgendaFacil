@@ -35,6 +35,11 @@ jobs:
             echo "Tentativa $i/30..."
             sleep 5
           done
+          
+      #  Mostrar logs do backend (debug)    
+      - name: Mostrar logs do backend (debug)
+        if: failure()
+        run: docker logs $(docker ps -qf "name=agenda_backend")    
 
       # Configurar e buildar o frontend
       - name: Configurar Node.js
