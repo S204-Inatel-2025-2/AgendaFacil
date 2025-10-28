@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, MapPin, Star, Clock, Phone, Users, Calendar, Filter, Search } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -32,6 +33,7 @@ interface ServiceCategoryPageProps {
   icon: string;
   gradient: string;
   companies: Company[];
+  initialPageSize?: number;
 }
 
 export function ServiceCategoryPage({
@@ -42,9 +44,16 @@ export function ServiceCategoryPage({
   description,
   icon,
   gradient,
-  companies
+  companies,
+  initialPageSize = 6
 }: ServiceCategoryPageProps) {
   const { t } = useLanguage();
+
+  // UI state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedService, setSelectedService] = useState<'all' | string>('all');
+  const [visibleCount, setVisibleCount] = useState(initialPageSize);
 
   const pageVariants = {
     initial: { 
@@ -70,7 +79,7 @@ export function ServiceCategoryPage({
         ease: [0.23, 1, 0.32, 1]
       }
     }
-  };
+  }as const;
 
   const companyCardVariants = {
     hidden: { 
@@ -88,7 +97,41 @@ export function ServiceCategoryPage({
         ease: [0.23, 1, 0.32, 1]
       }
     })
-  };
+  } as const;;
+
+  // Derive unique services from companies
+    const uniqueServices = useMemo(() => {
+    const s = new Set<string>();
+    companies.forEach((c) => c.services?.forEach((svc) => s.add(svc)));
+    return ['all', ...Array.from(s)];
+    }, [companies]);
+
+
+    //  Filtragem de empresas
+    const filteredCompanies = companies.filter(company => {
+      const matchesSearch =
+        company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        company.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesService =
+        !selectedService || company.services.includes(selectedService);
+
+      return matchesSearch && matchesService;
+    });
+
+    // Visible slice for pagination
+    const visibleCompanies = filteredCompanies.slice(0, visibleCount);
+
+    const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + initialPageSize);
+    };
+
+    const resetPagination = () => setVisibleCount(initialPageSize);
+
+    // Whenever filters change, reset visible count to first page
+    React.useEffect(() => {
+    resetPagination();
+    }, [searchTerm, selectedService, initialPageSize]);
 
   return (
     <motion.div 
@@ -123,26 +166,15 @@ export function ServiceCategoryPage({
                 </div>
               </div>
             </div>
-
-            <div className="hidden md:flex items-center gap-3">
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                Filtros
-              </Button>
-              <Button size="sm" className="bg-gradient-to-r from-primary to-emerald-600">
-                <Calendar className="w-4 h-4 mr-2" />
-                Agendar Agora
-              </Button>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Hero Section */}
-      <div className="relative py-20 overflow-hidden">
+      <div className="relative py-12 overflow-hidden">
         <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5`} />
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-        
+
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             className="text-center max-w-3xl mx-auto"
@@ -153,21 +185,75 @@ export function ServiceCategoryPage({
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Encontre os melhores profissionais em {title}
             </h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-6">
               {description}
             </p>
 
             {/* Search Bar */}
-            <div className="max-w-xl mx-auto relative">
+            <div className="max-w-xl mx-auto relative mb-4">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <Input
                 placeholder="Busque por profissional, especialidade ou localização..."
-                className="pl-12 pr-4 py-6 text-lg bg-background/80 backdrop-blur-sm border-border"
+                value={searchTerm}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSearchTerm(e.target.value)
+                }
+                className="pl-12 pr-4 py-4 text-lg bg-background/80 backdrop-blur-sm border-border"
               />
             </div>
+
+            {/* Filtros */}
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2"
+              >
+                <Filter className="w-4 h-4" />
+                {showFilters ? 'Ocultar filtros' : 'Filtros'}
+              </Button>
+            </div>
+
+            {/* Chips de serviços */}
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-wrap justify-center gap-3 mt-6"
+                >
+                  {uniqueServices.map((svc) => {
+                    const isAll = svc === 'all';
+                    const label = isAll ? 'Todos' : svc;
+                    const active =
+                      selectedService.toLowerCase() === svc.toLowerCase();
+
+                    return (
+                      <button
+                        key={svc}
+                        onClick={() =>
+                          setSelectedService(isAll ? 'all' : svc)
+                        }
+                        className={`px-4 py-2 rounded-full text-sm border transition-all ${
+                          active
+                            ? 'bg-foreground text-white shadow-lg border-foreground'
+                            : 'bg-background/60 text-muted-foreground hover:bg-muted/50 border-border'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>
+
 
       {/* Companies Grid */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
@@ -291,17 +377,14 @@ export function ServiceCategoryPage({
         </div>
 
         {/* Load More */}
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <Button variant="outline" size="lg" className="px-8">
-            Carregar mais empresas
-          </Button>
+        {visibleCount < filteredCompanies.length && (
+        <motion.div className="text-center mt-12" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
+        <Button variant="outline" size="lg" className="px-8" onClick={handleLoadMore}>
+        Carregar mais empresas
+        </Button>
         </motion.div>
-      </div>
-    </motion.div>
+        )}
+        </div>
+        </motion.div>
   );
 }

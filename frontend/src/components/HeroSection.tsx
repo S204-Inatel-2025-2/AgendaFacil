@@ -152,13 +152,6 @@ export function HeroSection({ onServiceClick }: HeroSectionProps) {
                 {t.hero_cta_primary}
               </Button>
               
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-2 border-border hover:border-primary/50 bg-background/50 backdrop-blur-sm px-8 py-6 text-lg font-semibold hover:bg-primary/5 transition-all duration-300"
-              >
-                {t.hero_cta_secondary}
-              </Button>
             </motion.div>
 
             {/* Stats */}

@@ -21,7 +21,6 @@ const translations = {
     hero_title: "Agende seus serviços com facilidade",
     hero_subtitle: "Conectamos você aos melhores profissionais da sua região. Agendamento online rápido, seguro e confiável.",
     hero_cta_primary: "Cadastrar meus serviços",
-    hero_cta_secondary: "Ver serviços",
     hero_stats_providers: "Profissionais",
     hero_stats_bookings: "Agendamentos",
     hero_stats_cities: "Cidades",

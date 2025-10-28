@@ -107,7 +107,7 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <motion.div 
-            className="flex items-center space-x-3"
+            className="flex items-center space-x-3 cursor-pointer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -145,32 +145,6 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground cursor-pointer"
-              >
-                <Search className="w-4 h-4" />
-              </Button>
-            </motion.div>
-            
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground relative cursor-pointer"
-              >
-                <Bell className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
-              </Button>
-            </motion.div>
 
             {isAuthenticated ? (
               // Usuário logado
