@@ -12,6 +12,7 @@ public class ConsultarCnpjAPI {
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String URL_BASE = "https://brasilapi.com.br/api/cnpj/v1/";
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> buscarCnpj(String cnpj) {
         try {
             return restTemplate.getForObject(URL_BASE + cnpj, Map.class);
