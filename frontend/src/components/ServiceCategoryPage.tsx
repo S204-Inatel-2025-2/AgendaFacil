@@ -114,7 +114,8 @@ export function ServiceCategoryPage({
         company.description.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesService =
-        !selectedService || company.services.includes(selectedService);
+        selectedService === 'all' || company.services.includes(selectedService);
+
 
       return matchesSearch && matchesService;
     });
@@ -203,53 +204,51 @@ export function ServiceCategoryPage({
             </div>
 
             {/* Filtros */}
-            <div className="flex justify-center">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2"
-              >
-                <Filter className="w-4 h-4" />
-                {showFilters ? 'Ocultar filtros' : 'Filtros'}
-              </Button>
-            </div>
+            <div className="flex flex-col items-center gap-3">
+              
 
-            {/* Chips de serviços */}
-            <AnimatePresence>
-              {showFilters && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex flex-wrap justify-center gap-3 mt-6"
-                >
-                  {uniqueServices.map((svc) => {
-                    const isAll = svc === 'all';
-                    const label = isAll ? 'Todos' : svc;
-                    const active =
-                      selectedService.toLowerCase() === svc.toLowerCase();
+              {/* Painel de filtro em estilo "select" */}
+              <AnimatePresence>
+              
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.18 }}
+                    className="mt-4 w-full flex justify-center"
+                  >
+                    <div className="max-w-xs w-full">
+                      <label className="block text-sm text-muted-foreground mb-2">
+                        Filtrar por área:
+                      </label>
 
-                    return (
-                      <button
-                        key={svc}
-                        onClick={() =>
-                          setSelectedService(isAll ? 'all' : svc)
-                        }
-                        className={`px-4 py-2 rounded-full text-sm border transition-all ${
-                          active
-                            ? 'bg-foreground text-white shadow-lg border-foreground'
-                            : 'bg-background/60 text-muted-foreground hover:bg-muted/50 border-border'
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                      {/* Select nativo estilizado para parecer integrado com o design */}
+                      <div className="relative">
+                        <select
+                          value={selectedService}
+                          onChange={(e) => setSelectedService(e.target.value as 'all' | string)}
+                          className="appearance-none w-full pl-4 pr-10 py-3 text-sm bg-background/80 border border-border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        >
+                          {uniqueServices.map((svc) => (
+                            <option key={svc} value={svc}>
+                              {svc === 'all' ? 'Todas' : svc}
+                            </option>
+                          ))}
+                        </select>
+
+                        {/* ícone de setinha (padrão look) */}
+                        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                          <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                
+              </AnimatePresence>
+</div>
+
           </motion.div>
         </div>
       </div>
@@ -258,7 +257,7 @@ export function ServiceCategoryPage({
       {/* Companies Grid */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {companies.map((company, index) => (
+          {filteredCompanies.map((company, index) => (
             <motion.div
               key={company.id}
               custom={index}

@@ -8,11 +8,10 @@ const translations = {
     loading_subtitle: "Conectando você aos melhores serviços",
     
     // Header
-    nav_services: "Serviços",
-    nav_schedule: "Agendar",
+    nav_historico: "Histórico",
     nav_my_appointments: "Meus Agendamentos",
-    nav_about: "Sobre",
-    nav_contact: "Contato",
+    nav_fav: "Favoritos",
+    nav_reagendar: "Reagendar",
     nav_help: "Ajuda",
     login: "Entrar",
     register: "Cadastrar",
@@ -130,7 +129,7 @@ const translations = {
     footer_newsletter_desc: "Receba novidades e promoções",
     footer_newsletter_placeholder: "Seu e-mail",
     footer_newsletter_subscribe: "Inscrever",
-    footer_copyright: "© 2024 AgendaFácil. Todos os direitos reservados.",
+    footer_copyright: "© 2025 AgendaFácil. Todos os direitos reservados.",
     
     // Floating Buttons
     theme_toggle: "Alternar tema",
