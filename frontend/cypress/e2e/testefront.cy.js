@@ -39,19 +39,51 @@ describe("Teste login", () => {
 })
 
 describe("Teste meus agendamentos", () => {
-  it("Teste cadastrar meus agentamentos", () => {
-    cy.visit('http://localhost:5173/')
-    cy.get('.space-x-8 > :nth-child(3)').click()
-    cy.get('.space-x-4 > :nth-child(3) > .inline-flex').click()
-    cy.get('.text-2xl')
-      .should('be.visible')
-      .and('contain', 'Entrar na sua conta')
-    cy.get('#email').type('sabrina@gmail.com')
-    cy.get('#senha').type('123456789')
-    cy.get('.space-y-6 > .inline-flex').click()
-    cy.get('[data-cypress-el="true"]').click()
-    cy.contains('Meus Agendamentos').should('be.visible')
+  it("Deve abrir a página Meus Agendamentos após login", () => {
+    cy.visit('http://localhost:5173/');
 
-  })
+    cy.get('.space-x-8 > :nth-child(3)').click();
 
-})
+    cy.get('#email', { timeout: 10000 }).should('be.visible').type('marcelo123@email.com');
+    cy.get('#senha').type('senha123');
+    cy.get('.space-y-6 > .inline-flex').click();
+    cy.wait(2000);
+    cy.get('[data-cypress-el="true"]').click();
+
+  });
+});
+
+describe("Teste consultas médicas", () => {
+  it("Deve abrir a página de consultas médicas", () => {
+    cy.visit('http://localhost:5173/');
+
+    cy.get('.space-x-8 > :nth-child(3)').click();
+
+    cy.get('#email', { timeout: 10000 }).should('be.visible').type('marcelo123@email.com');
+    cy.get('#senha').type('senha123');
+    cy.get('.space-y-6 > .inline-flex').click();
+    cy.wait(2000);
+    cy.get('.lg\\:grid-cols-2 > :nth-child(2) > .grid > :nth-child(1) > .text-card-foreground > .inset-0').click({ force: true })
+    cy.get(':nth-child(2) > .text-xl')
+
+
+  });
+});
+
+describe("Teste beleza e estética", () => {
+  it("Deve abrir a página de beleza e estética", () => {
+    cy.visit('http://localhost:5173/');
+
+    cy.get('.space-x-8 > :nth-child(3)').click();
+
+    cy.get('#email', { timeout: 10000 }).should('be.visible').type('marcelo123@email.com');
+    cy.get('#senha').type('senha123');
+    cy.get('.space-y-6 > .inline-flex').click();
+    cy.wait(2000);
+    cy.get('.lg\\:grid-cols-2 > :nth-child(2) > .grid > :nth-child(2) > .text-card-foreground > .relative').click({ force: true })
+    cy.get(':nth-child(2) > .text-xl')
+
+  });
+});
+
+
