@@ -24,7 +24,7 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
     setIsLoggingOut(true);
     try {
       
-      toast.success('👋 Logout realizado com sucesso! Até logo!', { id: 'logout' });
+      toast.success('Logout realizado com sucesso! Até logo!', { id: 'logout' });
       // Simular delay para mostrar o loading
       await new Promise(resolve => setTimeout(resolve, 700));
       
@@ -39,7 +39,7 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
         behavior: 'smooth'
       });
     } catch (error) {
-      toast.error('❌ Erro ao fazer logout. Tente novamente.', { id: 'logout' });
+      toast.error('Erro ao fazer logout. Tente novamente.', { id: 'logout' });
     } finally {
       setIsLoggingOut(false);
     }
@@ -59,11 +59,10 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
   };
 
   const navItems = [
-    { label: t.nav_services, href: '#services' },
-    { label: t.nav_schedule, href: '#schedule' },
     { label: t.nav_my_appointments, href: '#appointments', onClick: handleAppointmentsClick },
-    { label: t.nav_about, href: '#about' },
-    { label: t.nav_contact, href: '#contact' }
+    { label: t.nav_reagendar, href: '#reagendar', onClick: handleAppointmentsClick },
+    { label: t.nav_historico, href: '#historico', onClick: handleAppointmentsClick },
+    { label: t.nav_fav, href: '#fav', onClick: handleAppointmentsClick },
   ];
 
   return (
@@ -107,7 +106,8 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <motion.div 
-            className="flex items-center space-x-3"
+            onClick={() => window.location.href = '/'}
+            className="flex items-center space-x-3 cursor-pointer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -145,32 +145,6 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground cursor-pointer"
-              >
-                <Search className="w-4 h-4" />
-              </Button>
-            </motion.div>
-            
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground relative cursor-pointer"
-              >
-                <Bell className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
-              </Button>
-            </motion.div>
 
             {isAuthenticated ? (
               // Usuário logado
