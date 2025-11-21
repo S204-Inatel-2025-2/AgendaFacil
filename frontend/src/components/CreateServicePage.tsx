@@ -28,6 +28,7 @@ export default function CreateServicePage({ onBack, onCreate }: CreateServicePag
   const [tagInput, setTagInput] = useState("");
   const [allowCoupon, setAllowCoupon] = useState(false);
   const [image, setImage] = useState<string | null>(null);
+  const [services, setServices] = useState<any[]>([]);
 
   // Handle image preview
   const handleImageUpload = (file: File | null) => {
@@ -90,8 +91,19 @@ export default function CreateServicePage({ onBack, onCreate }: CreateServicePag
 
           {/* Name */}
           <div>
-            <Label className="text-sm font-medium">Nome do Serviço</Label>
+            <Label className="text-sm font-medium">Nome da empresa</Label>
             <Input value={name} onChange={e => setName(e.target.value)}  />
+          </div>
+
+          {/* Description */}
+          <div>
+            <Label className="text-sm font-medium">Descrição da empresa</Label>
+            <Textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              
+              className="min-h-[110px]"
+            />
           </div>
 
           {/* Category */}
@@ -113,30 +125,6 @@ export default function CreateServicePage({ onBack, onCreate }: CreateServicePag
             </Select>
             </div>
 
-
-          {/* Description */}
-          <div>
-            <Label className="text-sm font-medium">Descrição</Label>
-            <Textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              
-              className="min-h-[110px]"
-            />
-          </div>
-
-          {/* Price + Duration */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">Preço</Label>
-              <Input value={price} onChange={e => setPrice(e.target.value)} placeholder="Ex: R$ 120,00" />
-            </div>
-            <div>
-              <Label className="text-sm font-medium">Duração (minutos)</Label>
-              <Input value={duration} onChange={e => setDuration(e.target.value)} placeholder="Ex: 45" />
-            </div>
-          </div>
-
           {/* Location */}
           <div>
             <Label className="text-sm font-medium">Local do atendimento</Label>
@@ -148,7 +136,7 @@ export default function CreateServicePage({ onBack, onCreate }: CreateServicePag
 
           {/* Availability */}
           <div>
-            <Label className="text-sm font-medium">Disponibilidade</Label>
+            <Label className="text-sm font-medium">Disponibilidade geral</Label>
             <Input
               value={availability}
               onChange={e => setAvailability(e.target.value)}
@@ -184,6 +172,113 @@ export default function CreateServicePage({ onBack, onCreate }: CreateServicePag
             </div>
           </div>
 
+          {/* --- "Adicionar Serviço" --- */}
+        <div className="border border-border rounded-lg p-4 bg-background/60 space-y-4">
+        <h3 className="text-lg font-semibold">Adicionar serviço</h3>
+
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+            <Label className="text-sm font-medium">Nome do serviço</Label>
+            <Input value={name} onChange={e => setName(e.target.value)} />
+            </div>
+
+            <div>
+            <Label className="text-sm font-medium">Preço</Label>
+            <Input value={price} onChange={e => setPrice(e.target.value)} placeholder="Ex: R$ 120,00" />
+            </div>
+        </div>
+
+        <div>
+            <Label className="text-sm font-medium">Descrição do serviço</Label>
+            <Textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            className="min-h-[90px]"
+            />
+        </div>
+
+        <div>
+            <Label className="text-sm font-medium">Duração (minutos)</Label>
+            <Input value={duration} onChange={e => setDuration(e.target.value)} placeholder="Ex: 45" />
+        </div>
+
+        {/* Ações: adicionar (empilha na lista) e limpar */}
+        <div className="flex gap-3">
+            <Button
+            onClick={() => {
+                // validação mínima
+                if (!name.trim()) return alert("Preencha o nome do serviço.");
+                // cria o objeto do serviço
+                const newService = {
+                id: crypto?.randomUUID?.() ?? Date.now().toString(),
+                name: name.trim(),
+                description: description.trim(),
+                price: price.trim(),
+                duration: duration.trim(),
+                };
+                // adiciona à lista
+                setServices(prev => [...prev, newService]);
+                // limpa campos para o próximo serviço
+                setName("");
+                setDescription("");
+                setPrice("");
+                setDuration("");
+            }}
+            className="bg-gradient-to-r from-primary to-emerald-600 text-white px-4 py-3"
+            >
+            Adicionar serviço
+            </Button>
+
+            <Button
+            variant="outline"
+            onClick={() => {
+                setName("");
+                setDescription("");
+                setPrice("");
+                setDuration("");
+            }}
+            >
+            Limpar
+            </Button>
+        </div>
+
+        {/* Lista dos serviços adicionados (preview) */}
+        <div className="pt-4 space-y-3">
+            <h4 className="text-sm font-medium">Serviços adicionados</h4>
+
+            {services.length === 0 && (
+            <p className="text-sm text-muted-foreground">Nenhum serviço adicionado ainda.</p>
+            )}
+
+            <div className="space-y-2">
+            {services.map((s) => (
+                <Card key={s.id} className="p-3 flex items-start justify-between gap-3">
+                <div>
+                    <div className="font-medium">{s.name}</div>
+                    <div className="text-sm text-muted-foreground">{s.description}</div>
+                    <div className="text-sm mt-1">Preço: {s.price} • Duração: {s.duration} min</div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                        setServices(prev => prev.filter(x => x.id !== s.id));
+                    }}
+                    >
+                    Remover
+                    </Button>
+                </div>
+                </Card>
+            ))}
+            </div>
+        </div>
+        </div>
+
+
+
           {/* Allow Coupon */}
           <div className="flex items-center justify-between border border-border rounded-lg p-4">
             <div>
@@ -195,7 +290,7 @@ export default function CreateServicePage({ onBack, onCreate }: CreateServicePag
 
           {/* Image Upload */}
           <div>
-            <Label className="text-sm font-medium">Imagem do serviço</Label>
+            <Label className="text-sm font-medium">Imagem de capa</Label>
 
             <div className="mt-2">
               <label className="w-full h-40 border border-border rounded-lg cursor-pointer flex items-center justify-center bg-muted/20 hover:bg-muted/30 transition">
