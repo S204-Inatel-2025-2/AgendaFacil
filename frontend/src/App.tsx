@@ -15,6 +15,8 @@ import { ServiceDetailPage } from './components/ServiceDetailPage';
 import { serviceCategories } from './components/ServiceData';
 import { ServiceCategoryPage } from './components/ServiceCategoryPage';
 import { AppointmentsPage } from './components/AppointmentsPage';
+import CreateServicePage from "./components/CreateServicePage";
+
 
 // Apple-style Loading Component
 function AppleLoadingScreen() {
@@ -169,7 +171,7 @@ function RedirectingScreen() {
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail' | 'appointments'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail' | 'appointments' | 'create-service'>('home');
   const [currentServiceCategory, setCurrentServiceCategory] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
 
@@ -199,6 +201,10 @@ function AppContent() {
       setCurrentPage('appointments');
     }
   };
+
+  const handleCreateServiceClick = () => {
+  setCurrentPage("create-service");
+};
 
   const handleLogoutClick = () => {
     setCurrentPage('home');
@@ -262,7 +268,7 @@ function AppContent() {
         {isRedirecting && <RedirectingScreen key="redirecting" />}
       </AnimatePresence>
 
-    {/* ✅ Header fixo em todas as páginas */}
+    {/* Header fixo em todas as páginas */}
       {!isLoading && (
         <Header 
           onLoginClick={() => setCurrentPage('login')}
@@ -283,7 +289,10 @@ function AppContent() {
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
             >
-              <HeroSection onServiceClick={handleServiceCategoryClick} />
+              <HeroSection 
+                onServiceClick={handleServiceCategoryClick}
+                onCreateServiceClick={handleCreateServiceClick}
+              />
             </motion.div>
             
             {/* Main content sections */}
@@ -351,7 +360,15 @@ function AppContent() {
             gradient={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].gradient}
           />
         )}
+
+        {!isLoading && currentPage === 'create-service' && (
+          <ApplePageTransition key="create-service">
+            <CreateServicePage onBack={() => setCurrentPage('home')} />
+          </ApplePageTransition>
+        )}
+
       </AnimatePresence>
+
 
       {/* Apple-style scroll progress indicator - only show on home page */}
       {currentPage === 'home' && (
