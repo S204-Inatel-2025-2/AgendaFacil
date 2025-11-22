@@ -1,5 +1,6 @@
 package com.agendafacil.backend.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.agendafacil.backend.DTO.EmpresaDTO;
@@ -25,16 +26,27 @@ public class EmpresaService {
     private EmpresaDTO cadastrarNovaEmpresa(String cnpj) {
         Map<String, Object> dados = consultarCnpjAPI.buscarCnpj(cnpj);
 
+        String razaoSocial = (String) dados.get("razao_social");
+        String nome = (String) dados.get("nome_fantasia");
+
+        if(nome == null || nome.trim().isEmpty()){
+            nome = razaoSocial;
+        }
+
         Empresa empresa = Empresa.builder()
             .cnpj(cnpj)
-            .razao_social((String) dados.get("razao_social"))
-            .nome((String) dados.get("nome"))
-            .telefone((String) dados.get("telefone"))
+            .razao_social(razaoSocial)
+            .nome(nome)
+            .telefone((String) dados.get("ddd_telefone_1"))
             .email((String) dados.get("email"))
             .build();
 
         empresaRepository.save(empresa);
         return EmpresaDTO.fromEntity(empresa);
+    }
+
+    public List<Empresa> findAll(){
+        return empresaRepository.findAll();
     }
 
 }
