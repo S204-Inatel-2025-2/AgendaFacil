@@ -9,7 +9,7 @@ describe("Teste página inicial", () => {
 describe("Teste de criação de cadastro", () => {
   it("Teste do botão de cadastro", () => {
     cy.visit('http://localhost:5173/')
-    cy.get(':nth-child(4) > .inline-flex').click()
+    cy.get('.space-x-4 > :nth-child(2) > .inline-flex').click()
     cy.get('.text-2xl')
       .should('be.visible')
       .and('contain', 'Crie sua conta')
@@ -27,7 +27,7 @@ describe("Teste de criação de cadastro", () => {
 describe("Teste login", () => {
   it("Teste login", () => {
     cy.visit('http://localhost:5173/')
-    cy.get('.space-x-4 > :nth-child(3) > .inline-flex').click()
+    cy.get('.space-x-4 > :nth-child(1) > .inline-flex').click()
     cy.get('.text-2xl')
       .should('be.visible')
       .and('contain', 'Entrar na sua conta')
@@ -85,5 +85,3 @@ describe("Teste beleza e estética", () => {
 
   });
 });
-
-
