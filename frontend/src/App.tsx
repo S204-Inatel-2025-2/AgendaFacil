@@ -16,6 +16,7 @@ import { serviceCategories } from './components/ServiceData';
 import { ServiceCategoryPage } from './components/ServiceCategoryPage';
 import { AppointmentsPage } from './components/AppointmentsPage';
 import CreateServicePage from "./components/CreateServicePage";
+import { ProfilePage } from './components/ProfilePage';
 
 
 // Apple-style Loading Component
@@ -171,7 +172,7 @@ function RedirectingScreen() {
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail' | 'appointments' | 'create-service'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail' | 'appointments' | 'create-service' | 'profile'>('home');
   const [currentServiceCategory, setCurrentServiceCategory] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
 
@@ -275,6 +276,7 @@ function AppContent() {
           onRegisterClick={() => setCurrentPage('register')}
           onAppointmentsClick={handleAppointmentsClick}
           onLogoutClick={handleLogoutClick}
+          onProfileClick={() => setCurrentPage('profile')}
         />
       )}
 
@@ -386,6 +388,14 @@ function AppContent() {
       {!isLoading && currentPage === 'appointments' && (
         <ApplePageTransition key="appointments">
           <AppointmentsPage 
+            onBack={() => setCurrentPage('home')}
+          />
+        </ApplePageTransition>
+      )}
+
+      {!isLoading && currentPage === 'profile' && (
+        <ApplePageTransition key="profile">
+          <ProfilePage 
             onBack={() => setCurrentPage('home')}
           />
         </ApplePageTransition>

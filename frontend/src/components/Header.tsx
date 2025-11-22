@@ -11,9 +11,10 @@ interface HeaderProps {
   onRegisterClick?: () => void;
   onAppointmentsClick?: () => void;
   onLogoutClick?: () => void;
+  onProfileClick?: () => void;
 }
 
-export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onLogoutClick }: HeaderProps) {
+export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onLogoutClick, onProfileClick }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -164,6 +165,21 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
                 </motion.div>
                 
                 <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-muted-foreground hover:text-foreground cursor-pointer"
+                    onClick={onProfileClick}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Perfil
+                  </Button>
+                </motion.div>
+                
+                <motion.div
                   whileHover={{ scale: isLoggingOut ? 1 : 1.05 }}
                   whileTap={{ scale: isLoggingOut ? 1 : 0.95 }}
                 >
@@ -295,6 +311,18 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
                           {user?.nome_completo?.split(' ')[0] || 'Usuário'}
                         </span>
                       </div>
+                      
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-muted-foreground cursor-pointer"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          onProfileClick?.();
+                        }}
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        Perfil
+                      </Button>
                       
                       <Button
                         variant="outline"
