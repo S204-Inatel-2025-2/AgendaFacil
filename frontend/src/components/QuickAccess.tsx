@@ -4,16 +4,27 @@ import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { useLanguage } from './LanguageProvider';
 
-export function QuickAccess() {
+interface QuickAccessProps {
+  onAppointmentsClick?: () => void;
+}
+
+export function QuickAccess({onAppointmentsClick}: QuickAccessProps) {
   const { t } = useLanguage();
 
+  
+  const handleAppointmentsClick = () => {
+    onAppointmentsClick?.();
+  };
+  
   const quickActions = [
     {
       icon: Calendar,
       title: t.quick_book,
       description: t.quick_book_desc,
       gradient: 'from-emerald-500 to-green-600',
-      delay: 0.1
+      delay: 0.1,
+      href: '#appointments',
+      onClick: handleAppointmentsClick //TEM QUE ARRUMAR ISSO AQUI
     },
     {
       icon: RotateCcw,
@@ -83,7 +94,7 @@ export function QuickAccess() {
                 transition: { duration: 0.2 }
               }}
             >
-              <Card className="relative h-40 p-6 bg-background/50 backdrop-blur-sm border-border hover:border-primary/30 transition-all duration-300 overflow-hidden group cursor-pointer">
+              <Card onClick={action.onClick} className="relative h-40 p-6 bg-background/50 backdrop-blur-sm border-border hover:border-primary/30 transition-all duration-300 overflow-hidden group cursor-pointer">
                 {/* Background Gradient */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${action.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
                 

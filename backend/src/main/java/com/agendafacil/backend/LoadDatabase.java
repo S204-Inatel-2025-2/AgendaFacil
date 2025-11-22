@@ -16,7 +16,11 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(UserRepository repository){
         return args -> {
-            log.info("Preloading " + repository.save(new User("Marcelo Lima", "marcelo123@email.com", "123456789", "senha123")));
+            if (repository.findByEmail("marcelo123@email.com").isEmpty()) {
+                log.info("Preloading " + repository.save(new User("Marcelo Lima", "marcelo123@email.com", "123456789", "senha123")));
+            } else {
+                log.info("Usuário marcelo123@email.com já existe, pulando pré-carga");
+            }
         };
     }
 }
