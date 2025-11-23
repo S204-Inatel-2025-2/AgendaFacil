@@ -1,6 +1,8 @@
 package com.agendafacil.backend.DTO;
 
 import com.agendafacil.backend.model.Empresa;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Data
@@ -13,9 +15,12 @@ public class EmpresaDTO {
     private String email;
     private String telefone;
 
+    @JsonIgnore
+    private Boolean tem_email_api; // true se tiver o email na api kkk
+
     public static EmpresaDTO fromEntity(Empresa empresa) {
         EmpresaDTO dto = new EmpresaDTO();
-        //dto.setId(empresa.getId());
+        dto.setId(empresa.getId());
         dto.setNome(empresa.getNome());
         dto.setCnpj(empresa.getCnpj());
         dto.setRazao_social(empresa.getRazao_social());
