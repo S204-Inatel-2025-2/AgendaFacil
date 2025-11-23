@@ -14,6 +14,7 @@ public class EmpresaDTO {
     private String razao_social;
     private String email;
     private String telefone;
+    private String senha;
 
     @JsonIgnore
     private Boolean tem_email_api;
