@@ -53,12 +53,12 @@ public class EmpresaService {
         String nome = (String) dados.get("nome_fantasia");
         String email = (String) dados.get("email");
         String telefone = (String) dados.get("ddd_telefone_1");
-
+        String senha = "";// ainda não tá funcionando o cadastro até eu pensar num jeito de implementar isso
         if(nome == null || nome.trim().isEmpty()){
             nome = razaoSocial;
         }
 
-        Empresa empresa = new Empresa(nome, razaoSocial, cnpj, email, telefone);
+        Empresa empresa = new Empresa(nome, razaoSocial, cnpj, email, telefone, senha);
         empresaRepository.save(empresa);
         return EmpresaDTO.fromEntity(empresa);
     }
