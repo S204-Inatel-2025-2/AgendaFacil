@@ -16,7 +16,7 @@ public class EmpresaDTO {
     private String telefone;
 
     @JsonIgnore
-    private Boolean tem_email_api;
+    private Boolean tem_email_api; // true se tiver o email na api kkk
 
     public static EmpresaDTO fromEntity(Empresa empresa) {
         EmpresaDTO dto = new EmpresaDTO();
