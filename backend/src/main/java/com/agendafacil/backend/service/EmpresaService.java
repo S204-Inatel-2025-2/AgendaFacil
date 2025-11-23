@@ -17,6 +17,29 @@ public class EmpresaService {
     private final EmpresaRepository empresaRepository;
     private final ConsultarCnpjAPI consultarCnpjAPI;
 
+    public EmpresaDTO consultaCnpj(String cnpj){
+        cnpj = cnpj.replaceAll("[^0-9]", "");
+
+        Map<String, Object> dados = consultarCnpjAPI.buscarCnpj(cnpj);
+        String razaoSocial = (String) dados.get("razao_social");
+        String nome = (String) dados.get("nome_fantasia");
+        String email = (String) dados.get("email");
+        String telefone = (String) dados.get("ddd_telefone_1");
+
+        if(nome == null || nome.trim().isEmpty()){
+            nome = razaoSocial;
+        }
+
+        EmpresaDTO dto = new EmpresaDTO();
+        dto.setCnpj(cnpj);
+        dto.setNome(nome);
+        dto.setRazao_social(razaoSocial);
+        dto.setTelefone(telefone);
+        dto.setEmail(email != null ? email:"");
+
+        return dto;
+    }
+
     public EmpresaDTO obterOuCadastrarEmpresaPorCNPJ(String cnpj){
         return empresaRepository.findByCnpj(cnpj)
             .map(EmpresaDTO::fromEntity)
@@ -28,19 +51,14 @@ public class EmpresaService {
 
         String razaoSocial = (String) dados.get("razao_social");
         String nome = (String) dados.get("nome_fantasia");
+        String email = (String) dados.get("email");
+        String telefone = (String) dados.get("ddd_telefone_1");
 
         if(nome == null || nome.trim().isEmpty()){
             nome = razaoSocial;
         }
 
-        Empresa empresa = Empresa.builder()
-            .cnpj(cnpj)
-            .razao_social(razaoSocial)
-            .nome(nome)
-            .telefone((String) dados.get("ddd_telefone_1"))
-            .email((String) dados.get("email"))
-            .build();
-
+        Empresa empresa = new Empresa(nome, razaoSocial, cnpj, email, telefone);
         empresaRepository.save(empresa);
         return EmpresaDTO.fromEntity(empresa);
     }
