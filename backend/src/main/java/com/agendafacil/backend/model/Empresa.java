@@ -27,14 +27,16 @@ public class Empresa {
     private String cnpj;
     private String email;
     private String telefone;
+    private String senha;
 
     public Empresa(){}
 
-    public Empresa(String nome, String razao_social, String cnpj, String email, String telefone){
+    public Empresa(String nome, String razao_social, String cnpj, String email, String telefone, String senha){
         this.nome = nome;
         this.razao_social = razao_social;
         this.cnpj = cnpj;
         this.email = email;
         this.telefone = telefone;
+        this.senha = senha;
     }
 }
