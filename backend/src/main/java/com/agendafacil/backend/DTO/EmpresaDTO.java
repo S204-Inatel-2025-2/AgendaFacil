@@ -15,7 +15,7 @@ public class EmpresaDTO {
 
     public static EmpresaDTO fromEntity(Empresa empresa) {
         EmpresaDTO dto = new EmpresaDTO();
-        //dto.setId(empresa.getId());
+        dto.setId(empresa.getId());
         dto.setNome(empresa.getNome());
         dto.setCnpj(empresa.getCnpj());
         dto.setRazao_social(empresa.getRazao_social());
