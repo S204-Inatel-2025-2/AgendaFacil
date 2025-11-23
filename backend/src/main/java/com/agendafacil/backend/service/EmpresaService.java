@@ -28,19 +28,14 @@ public class EmpresaService {
 
         String razaoSocial = (String) dados.get("razao_social");
         String nome = (String) dados.get("nome_fantasia");
+        String email = (String) dados.get("email");
+        String telefone = (String) dados.get("ddd_telefone_1");
 
         if(nome == null || nome.trim().isEmpty()){
             nome = razaoSocial;
         }
 
-        Empresa empresa = Empresa.builder()
-            .cnpj(cnpj)
-            .razao_social(razaoSocial)
-            .nome(nome)
-            .telefone((String) dados.get("ddd_telefone_1"))
-            .email((String) dados.get("email"))
-            .build();
-
+        Empresa empresa = new Empresa(nome, razaoSocial, cnpj, email, telefone);
         empresaRepository.save(empresa);
         return EmpresaDTO.fromEntity(empresa);
     }
