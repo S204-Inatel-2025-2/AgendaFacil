@@ -5,11 +5,13 @@ import { Card } from './ui/card';
 import { useLanguage } from './LanguageProvider';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
-interface HeroSectionProps {
-  onServiceClick?: (categoryKey: string) => void;
-}
 
-export function HeroSection({ onServiceClick }: HeroSectionProps) {
+type HeroSectionProps = {
+  onServiceClick?: (categoryKey: string) => void;
+  onCreateServiceClick?: () => void;
+};
+
+export function HeroSection({ onServiceClick, onCreateServiceClick }: HeroSectionProps) {
   const { t } = useLanguage();
 
   const stats = [
@@ -147,18 +149,12 @@ export function HeroSection({ onServiceClick }: HeroSectionProps) {
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-primary to-emerald-600 hover:from-primary/90 hover:to-emerald-600/90 text-white border-0 px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover: cursor pointer"
+                onClick={onCreateServiceClick}
               >
                 <Calendar className="w-5 h-5 mr-2" />
                 {t.hero_cta_primary}
               </Button>
               
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-2 border-border hover:border-primary/50 bg-background/50 backdrop-blur-sm px-8 py-6 text-lg font-semibold hover:bg-primary/5 transition-all duration-300"
-              >
-                {t.hero_cta_secondary}
-              </Button>
             </motion.div>
 
             {/* Stats */}

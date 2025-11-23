@@ -3,6 +3,7 @@ package com.agendafacil.backend.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -10,9 +11,10 @@ import lombok.*;
 
 @Entity
 @Getter
-@Table(name = "users")
+@Setter
+@Table(name = "usuarios")
 public class User {
-    private @Id @GeneratedValue Long id;
+    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     private String nome_completo;
 
     @Column(nullable = false, unique = true)

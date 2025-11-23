@@ -10,9 +10,11 @@ interface HeaderProps {
   onLoginClick?: () => void;
   onRegisterClick?: () => void;
   onAppointmentsClick?: () => void;
+  onLogoutClick?: () => void;
+  onProfileClick?: () => void;
 }
 
-export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: HeaderProps) {
+export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onLogoutClick, onProfileClick }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -23,11 +25,14 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
     setIsLoggingOut(true);
     try {
       
-      toast.success('👋 Logout realizado com sucesso! Até logo!', { id: 'logout' });
+      toast.success('Logout realizado com sucesso! Até logo!', { id: 'logout' });
       // Simular delay para mostrar o loading
       await new Promise(resolve => setTimeout(resolve, 700));
       
       logout();
+      
+      // Redirecionar para a home
+      onLogoutClick?.();
       
       // Scroll suave para o topo da página
       window.scrollTo({
@@ -35,7 +40,7 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
         behavior: 'smooth'
       });
     } catch (error) {
-      toast.error('❌ Erro ao fazer logout. Tente novamente.', { id: 'logout' });
+      toast.error('Erro ao fazer logout. Tente novamente.', { id: 'logout' });
     } finally {
       setIsLoggingOut(false);
     }
@@ -51,20 +56,14 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
   }, []);
 
   const handleAppointmentsClick = () => {
-    if (!isAuthenticated) {
-      toast.error('Você precisa fazer login para acessar seus agendamentos');
-      onLoginClick?.();
-      return;
-    }
     onAppointmentsClick?.();
   };
 
   const navItems = [
-    { label: t.nav_services, href: '#services' },
-    { label: t.nav_schedule, href: '#schedule' },
     { label: t.nav_my_appointments, href: '#appointments', onClick: handleAppointmentsClick },
-    { label: t.nav_about, href: '#about' },
-    { label: t.nav_contact, href: '#contact' }
+    { label: t.nav_reagendar, href: '#reagendar', onClick: handleAppointmentsClick },
+    { label: t.nav_historico, href: '#historico', onClick: handleAppointmentsClick },
+    { label: t.nav_fav, href: '#fav', onClick: handleAppointmentsClick },
   ];
 
   return (
@@ -108,7 +107,8 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <motion.div 
-            className="flex items-center space-x-3"
+            onClick={() => window.location.href = '/'}
+            className="flex items-center space-x-3 cursor-pointer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -146,32 +146,6 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground cursor-pointer"
-              >
-                <Search className="w-4 h-4" />
-              </Button>
-            </motion.div>
-            
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground relative cursor-pointer"
-              >
-                <Bell className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
-              </Button>
-            </motion.div>
 
             {isAuthenticated ? (
               // Usuário logado
@@ -188,6 +162,21 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
                       {user?.nome_completo?.split(' ')[0] || 'Usuário'}
                     </span>
                   </div>
+                </motion.div>
+                
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-muted-foreground hover:text-foreground cursor-pointer"
+                    onClick={onProfileClick}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Perfil
+                  </Button>
                 </motion.div>
                 
                 <motion.div
@@ -322,6 +311,18 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick }: H
                           {user?.nome_completo?.split(' ')[0] || 'Usuário'}
                         </span>
                       </div>
+                      
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-muted-foreground cursor-pointer"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          onProfileClick?.();
+                        }}
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        Perfil
+                      </Button>
                       
                       <Button
                         variant="outline"

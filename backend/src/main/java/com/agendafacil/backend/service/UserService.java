@@ -40,8 +40,13 @@ public class UserService {
         return userOpt.get();
     }
 
+    public Optional<User> findById(Long id){
+        return userRepository.findById(id);
+    }
+
     public List<User> findAll() {
         return userRepository.findAll();
     }
+
         
 }

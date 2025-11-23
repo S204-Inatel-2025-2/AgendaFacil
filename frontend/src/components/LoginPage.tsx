@@ -155,7 +155,7 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
         <div className="w-full max-w-md">
           {/* Back button */}
           <motion.div
-            className="mb-6"
+            className="mb-2"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
@@ -163,7 +163,8 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
             <Button
               onClick={onBack}
               variant="ghost"
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              size="sm"
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground px-2 py-1 h-8 text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
               {t.back_to_home}
