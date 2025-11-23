@@ -35,18 +35,44 @@ public class EmpresaService {
         dto.setNome(nome);
         dto.setRazao_social(razaoSocial);
         dto.setTelefone(telefone);
-        dto.setEmail(email != null ? email:"");
+        dto.setEmail(email != null ? email:""); // se o email for nulo deixa o email vazio
 
         return dto;
     }
 
-    public EmpresaDTO obterOuCadastrarEmpresaPorCNPJ(String cnpj){
+    public Empresa cadastrarEmpresa(EmpresaDTO empresaDTO) throws Exception{
+        String cnpj = empresaDTO.getCnpj().replaceAll("[^0-9]", "");
+
+        if(empresaRepository.findByCnpj(cnpj).isPresent()){
+            throw new Exception("CNPJ já cadastrado!");
+        }
+
+        Empresa empresa = new Empresa(
+            empresaDTO.getNome(),
+            empresaDTO.getRazao_social(),
+            cnpj,
+            empresaDTO.getEmail(),
+            empresaDTO.getTelefone(),
+            empresaDTO.getSenha()
+        );
+
+        empresaRepository.save(empresa);
+        return empresa;
+    }
+
+    public List<Empresa> findAll(){
+        return empresaRepository.findAll();
+    }
+
+    /*
+      public EmpresaDTO obterOuCadastrarEmpresaPorCNPJ(String cnpj){
         return empresaRepository.findByCnpj(cnpj)
             .map(EmpresaDTO::fromEntity)
             .orElseGet(() -> cadastrarNovaEmpresa(cnpj));
     }
 
-    private EmpresaDTO cadastrarNovaEmpresa(String cnpj) {
+
+    private Empresa cadastrarNovaEmpresa(String cnpj) {
         Map<String, Object> dados = consultarCnpjAPI.buscarCnpj(cnpj);
 
         String razaoSocial = (String) dados.get("razao_social");
@@ -60,11 +86,8 @@ public class EmpresaService {
 
         Empresa empresa = new Empresa(nome, razaoSocial, cnpj, email, telefone, senha);
         empresaRepository.save(empresa);
-        return EmpresaDTO.fromEntity(empresa);
+        return empresa;
     }
-
-    public List<Empresa> findAll(){
-        return empresaRepository.findAll();
-    }
+    */
 
 }
