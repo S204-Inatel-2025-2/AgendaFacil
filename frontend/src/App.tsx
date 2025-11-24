@@ -274,6 +274,7 @@ function AppContent() {
         <Header 
           onLoginClick={() => setCurrentPage('login')}
           onRegisterClick={() => setCurrentPage('register')}
+          onOpenFavorites={() => setCurrentPage("favorites")}
           onAppointmentsClick={handleAppointmentsClick}
           onLogoutClick={handleLogoutClick}
           onProfileClick={() => setCurrentPage('profile')}
@@ -306,7 +307,10 @@ function AppContent() {
                 whileInView="visible"
                 viewport={{ once: true, margin: "-100px" }}
               >
-                <QuickAccess />
+                <QuickAccess
+                  onOpenFavorites={() => setCurrentPage("favorites")}
+                  onAppointmentsClick={handleAppointmentsClick}
+                />
               </motion.div>
           
             </main>
@@ -394,7 +398,7 @@ function AppContent() {
         </ApplePageTransition>
       )}
 
-      {currentPage === "favorites" && (
+      {currentPage === "favorites" && ( //ARRUMAR
         <FavoritesPage
           onBack={() => setCurrentPage("home")}
           onSelect={(company) => {

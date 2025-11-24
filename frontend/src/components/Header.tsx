@@ -5,16 +5,18 @@ import { Button } from './ui/button';
 import { useLanguage } from './LanguageProvider';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import { on } from 'events';
 
 interface HeaderProps {
   onLoginClick?: () => void;
   onRegisterClick?: () => void;
-  onAppointmentsClick?: () => void;
+  onOpenFavorites?: () => void;
   onLogoutClick?: () => void;
   onProfileClick?: () => void;
+  onAppointmentsClick?: () => void;
 }
 
-export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onLogoutClick, onProfileClick }: HeaderProps) {
+export function Header({ onLoginClick, onRegisterClick, onOpenFavorites, onAppointmentsClick, onLogoutClick, onProfileClick }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -59,11 +61,15 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
     onAppointmentsClick?.();
   };
 
+  const handleFavClick = () => {
+    onOpenFavorites?.();
+  };
+
   const navItems = [
     { label: t.nav_my_appointments, href: '#appointments', onClick: handleAppointmentsClick },
     { label: t.nav_reagendar, href: '#reagendar', onClick: handleAppointmentsClick },
     { label: t.nav_historico, href: '#historico', onClick: handleAppointmentsClick },
-    { label: t.nav_fav, href: '#fav', onClick: handleAppointmentsClick },
+    { label: t.nav_fav, href: '#fav', onClick: handleFavClick },
   ];
 
   return (
