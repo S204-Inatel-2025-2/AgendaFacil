@@ -25,6 +25,8 @@ import { Badge } from './ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { toast } from 'sonner';
+import { servicoService } from '../services/ServicoService';
+import type { ServicoDTO } from '../services/ServicoService';
 
 interface TimeSlot {
   id: string;
@@ -112,6 +114,7 @@ export function ServiceManagement({
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
   const [serviceSelectedDates, setServiceSelectedDates] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<ServiceFormData>({
     name: '',
     description: '',
@@ -121,13 +124,12 @@ export function ServiceManagement({
   });
 
   const categories = [
-    'Consulta',
-    'Exame',
-    'Procedimento',
-    'Tratamento',
-    'Terapia',
-    'Cirurgia',
-    'Outro'
+    { value: 'consultas-medicas', label: 'Consultas Médicas' },
+    { value: 'beleza-estetica', label: 'Beleza & Estética' },
+    { value: 'assistencia-tecnica', label: 'Assistência Técnica' },
+    { value: 'aulas-particulares', label: 'Aulas Particulares' },
+    { value: 'bem-estar', label: 'Bem-estar' },
+    { value: 'automotivo', label: 'Automotivo' }
   ];
 
   const resetForm = () => {
@@ -140,22 +142,55 @@ export function ServiceManagement({
     });
   };
 
-  const handleAddService = () => {
+  const handleAddService = async () => {
     if (!formData.name || !formData.description || !formData.category) {
       toast.error('Preencha todos os campos obrigatórios');
       return;
     }
 
-    const newService: Service = {
-      id: Date.now().toString(),
-      ...formData,
-      timeSlots: generateTimeSlots()
-    };
+    setIsSubmitting(true);
 
-    onServicesUpdate([...services, newService]);
-    setIsAddingService(false);
-    resetForm();
-    toast.success('Serviço adicionado com sucesso!');
+    try {
+      // Converter para o formato do backend
+      const servicoDTO: ServicoDTO = {
+        nome: formData.name,
+        categoria: formData.category,
+        descricao: formData.description,
+        duracao_minutos: formData.duration,
+        preco: formData.price,
+      };
+
+      // Cadastrar no backend
+      const response = await servicoService.cadastrar(servicoDTO);
+
+      if (response.error) {
+        toast.error(`Erro ao cadastrar serviço: ${response.error}`);
+        return;
+      }
+
+      if (response.data) {
+        // Criar o serviço no formato do frontend com o ID retornado do backend
+        const newService: Service = {
+          id: response.data.id.toString(),
+          name: response.data.nome,
+          description: response.data.descricao,
+          duration: response.data.duracao_minutos,
+          price: Number(response.data.preco),
+          category: response.data.categoria,
+          timeSlots: generateTimeSlots()
+        };
+
+        onServicesUpdate([...services, newService]);
+        setIsAddingService(false);
+        resetForm();
+        toast.success('Serviço cadastrado com sucesso!');
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar serviço:', error);
+      toast.error('Erro ao cadastrar serviço. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBookSlot = (serviceId: string, slotId: string) => {
@@ -260,10 +295,35 @@ export function ServiceManagement({
     }
   };
 
-  const handleDeleteService = (serviceId: string) => {
-    const updatedServices = services.filter(service => service.id !== serviceId);
-    onServicesUpdate(updatedServices);
-    toast.success('Serviço removido com sucesso!');
+  const handleDeleteService = async (serviceId: string) => {
+    try {
+      // Converter ID de string para number
+      const serviceIdNumber = parseInt(serviceId);
+      
+      if (isNaN(serviceIdNumber)) {
+        // Se não for um ID numérico (serviço local), apenas remove localmente
+        const updatedServices = services.filter(service => service.id !== serviceId);
+        onServicesUpdate(updatedServices);
+        toast.success('Serviço removido com sucesso!');
+        return;
+      }
+
+      // Deletar no backend
+      const response = await servicoService.deletar(serviceIdNumber);
+
+      if (response.error) {
+        toast.error(`Erro ao deletar serviço: ${response.error}`);
+        return;
+      }
+
+      // Remover da lista local
+      const updatedServices = services.filter(service => service.id !== serviceId);
+      onServicesUpdate(updatedServices);
+      toast.success('Serviço removido com sucesso!');
+    } catch (error) {
+      console.error('Erro ao deletar serviço:', error);
+      toast.error('Erro ao deletar serviço. Tente novamente.');
+    }
   };
 
   const formatPrice = (price: number) => {
@@ -281,6 +341,11 @@ export function ServiceManagement({
       const minutes = duration % 60;
       return minutes > 0 ? `${hours}h ${minutes}min` : `${hours}h`;
     }
+  };
+
+  const getCategoryLabel = (categoryValue: string) => {
+    const category = categories.find(c => c.value === categoryValue);
+    return category ? category.label : categoryValue;
   };
 
   if (!isProviderMode) {
@@ -314,7 +379,7 @@ export function ServiceManagement({
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h4 className="font-semibold text-lg">{service.name}</h4>
-                          <Badge variant="secondary">{service.category}</Badge>
+                          <Badge variant="secondary">{getCategoryLabel(service.category)}</Badge>
                         </div>
                         <p className="text-muted-foreground mb-4">{service.description}</p>
                         
@@ -387,7 +452,7 @@ export function ServiceManagement({
                                 
                                 return (
                                   <motion.div
-                                    key={dateStr}
+                                    key={`${service.id}-date-${dateStr}`}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     className="flex-shrink-0"
@@ -434,7 +499,7 @@ export function ServiceManagement({
                                   
                                   return (
                                     <motion.div
-                                      key={slot.id}
+                                      key={`${service.id}-${slot.id}`}
                                       whileHover={isAvailable ? { scale: 1.05 } : {}}
                                       whileTap={isAvailable ? { scale: 0.95 } : {}}
                                     >
@@ -595,8 +660,8 @@ export function ServiceManagement({
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -647,9 +712,23 @@ export function ServiceManagement({
                   <Button
                     onClick={editingService ? handleUpdateService : handleAddService}
                     className="flex-1"
+                    disabled={isSubmitting}
                   >
-                    <Save className="w-4 h-4 mr-2" />
-                    {editingService ? 'Atualizar' : 'Salvar'} Serviço
+                    {isSubmitting ? (
+                      <>
+                        <motion.div
+                          className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full mr-2"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        />
+                        {editingService ? 'Atualizando...' : 'Cadastrando...'}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        {editingService ? 'Atualizar' : 'Salvar'} Serviço
+                      </>
+                    )}
                   </Button>
                   <Button
                     variant="outline"
@@ -690,7 +769,7 @@ export function ServiceManagement({
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h4 className="font-semibold text-lg">{service.name}</h4>
-                          <Badge variant="secondary">{service.category}</Badge>
+                          <Badge variant="secondary">{getCategoryLabel(service.category)}</Badge>
                         </div>
                         <p className="text-muted-foreground mb-4">{service.description}</p>
                         
@@ -776,7 +855,7 @@ export function ServiceManagement({
                                 
                                 return (
                                   <motion.div
-                                    key={dateStr}
+                                    key={`${service.id}-date-${dateStr}`}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     className="flex-shrink-0"
@@ -823,7 +902,7 @@ export function ServiceManagement({
                                   
                                   return (
                                     <motion.div
-                                      key={slot.id}
+                                      key={`${service.id}-${slot.id}`}
                                       whileHover={{ scale: 1.05 }}
                                       whileTap={{ scale: 0.95 }}
                                     >
@@ -840,7 +919,6 @@ export function ServiceManagement({
                                         }`}
                                         onClick={() => {
                                           handleTimeSlotToggle(service.id, slot.id);
-                                          setIsScheduleOpen(true);
                                         }}
                                       >
                                         <span className="text-sm font-medium">{slot.time}</span>
