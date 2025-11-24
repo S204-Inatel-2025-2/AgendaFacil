@@ -25,12 +25,17 @@ public class ServicoController {
     @PostMapping("/cadastrar")
     public Servico cadastrar(@RequestBody ServicoDTO servicoDTO){
         Servico servico = new Servico(servicoDTO.getNome(), servicoDTO.getCategoria(), servicoDTO.getDescricao(), servicoDTO.getDuracao_minutos(), servicoDTO.getPreco());
-        return servicoService.cadastrar(servico);
+        return servicoService.cadastrar(servico, servicoDTO.getEmpresaId());
     }
 
     @GetMapping
     public List<Servico> getAllServicos(){
         return servicoService.findAll();
+    }
+
+    @GetMapping("/empresa/{empresaId}")
+    public List<Servico> getServicoByEmpresa(@PathVariable Long empresaId){
+        return servicoService.findByEmpresaId(empresaId);
     }
 
     @GetMapping("/{id}")
