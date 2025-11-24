@@ -29,6 +29,7 @@ describe("Teste de criação de cadastro", () => {
 
 
 describe("Teste login", () => {
+
   it("deve fazer login com credenciais válidas", () => {
     cy.visit('/')
     cy.contains('Entrar').click()
@@ -97,5 +98,3 @@ describe("Teste beleza e estética", () => {
 
   });
 });
-
-

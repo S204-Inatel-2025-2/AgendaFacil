@@ -13,11 +13,11 @@ export interface RegisterRequest {
 }
 
 export interface EmpresaRegisterRequest {
-  nome: string;
-  razao_social: string;
+  nome?: string;
+  razao_social?: string;
   cnpj: string;
   email: string;
-  telefone: string;
+  telefone?: string;
   senha: string;
 }
 
@@ -27,6 +27,23 @@ export interface User {
   email: string;
   telefone: string;
   senha: string;
+}
+
+export interface Empresa {
+  id: number;
+  nome: string;
+  razao_social: string;
+  cnpj: string;
+  email: string;
+  telefone: string;
+}
+
+export interface EmpresaDTO {
+  cnpj: string;
+  nome?: string;
+  razao_social?: string;
+  email?: string;
+  telefone?: string;
 }
 
 export interface ApiResponse<T> {
@@ -74,6 +91,21 @@ class AuthService {
     return this.request<User>('/register', {
       method: 'POST',
       body: JSON.stringify(userData),
+    });
+  }
+
+  // consulta o cnpj na brasilapi
+  async consultarCNPJ(cnpj: string): Promise<ApiResponse<EmpresaDTO>> {
+    return this.request<EmpresaDTO>(`/empresas/cnpj/${cnpj}`, {
+      method: 'GET',
+    });
+  }
+
+  // cadastra a empresa com os dados
+  async registerEmpresa(empresaData: EmpresaRegisterRequest): Promise<ApiResponse<Empresa>> {
+    return this.request<Empresa>('/empresas/cadastrar', {
+      method: 'POST',
+      body: JSON.stringify(empresaData),
     });
   }
 }
