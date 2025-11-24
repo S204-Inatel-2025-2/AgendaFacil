@@ -132,3 +132,18 @@ jobs:
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA}
           docker tag ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
+  deploy:
+      runs-on: ubuntu-latest
+      needs: build-and-push
+      if: github.ref == 'refs/heads/main'
+
+      steps:
+        - name: Disparar deploy do backend no Render
+          run: curl -X POST "$RENDER_DEPLOY_HOOK"
+          env:
+            RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+        - name: Disparar deploy do frontend no Vercel
+          run: curl -X POST "$VERCEL_DEPLOY_HOOK"
+          env:
+            VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
