@@ -108,6 +108,14 @@ class AuthService {
       body: JSON.stringify(empresaData),
     });
   }
+
+  // faz login da empresa com os dados
+  async loginEmpresa(credentials: LoginRequest): Promise<ApiResponse<Empresa>> {
+  return this.request<Empresa>('/empresas/login', {
+    method: 'POST',
+    body: JSON.stringify(credentials),
+  });
+}
 }
 
 export const authService = new AuthService();
