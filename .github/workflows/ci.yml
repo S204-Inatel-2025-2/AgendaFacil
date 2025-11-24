@@ -77,9 +77,11 @@ jobs:
         with:
           working-directory: ./frontend
           browser: chrome
-          start: npx http-server dist -p 5173
-          wait-on: "http://localhost:5173"
+          install: false
+          start: ''
+          wait-on: "http://localhost:4200"
           wait-on-timeout: 60
+          config: baseUrl=http://localhost:4200
 
       #  Salvar artefatos dos testes
       - name: Salvar artefatos do Cypress
