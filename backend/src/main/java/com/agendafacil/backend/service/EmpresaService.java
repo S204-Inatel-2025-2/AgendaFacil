@@ -2,13 +2,17 @@ package com.agendafacil.backend.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.agendafacil.backend.DTO.EmpresaDTO;
 import com.agendafacil.backend.model.Empresa;
 import com.agendafacil.backend.repository.EmpresaRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -60,34 +64,16 @@ public class EmpresaService {
         return empresa;
     }
 
+    public Empresa loginEmpresa (String email, String senha){
+        Optional<Empresa> empresaOpt = empresaRepository.findByEmail(email);
+
+        if(empresaOpt.isEmpty() || !empresaOpt.get().getSenha().equals(senha)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou senha incorretos!");
+        }
+        return empresaOpt.get();
+    }
+
     public List<Empresa> findAll(){
         return empresaRepository.findAll();
     }
-
-    /*
-      public EmpresaDTO obterOuCadastrarEmpresaPorCNPJ(String cnpj){
-        return empresaRepository.findByCnpj(cnpj)
-            .map(EmpresaDTO::fromEntity)
-            .orElseGet(() -> cadastrarNovaEmpresa(cnpj));
-    }
-
-
-    private Empresa cadastrarNovaEmpresa(String cnpj) {
-        Map<String, Object> dados = consultarCnpjAPI.buscarCnpj(cnpj);
-
-        String razaoSocial = (String) dados.get("razao_social");
-        String nome = (String) dados.get("nome_fantasia");
-        String email = (String) dados.get("email");
-        String telefone = (String) dados.get("ddd_telefone_1");
-        String senha = "";// ainda não tá funcionando o cadastro até eu pensar num jeito de implementar isso
-        if(nome == null || nome.trim().isEmpty()){
-            nome = razaoSocial;
-        }
-
-        Empresa empresa = new Empresa(nome, razaoSocial, cnpj, email, telefone, senha);
-        empresaRepository.save(empresa);
-        return empresa;
-    }
-    */
-
 }
