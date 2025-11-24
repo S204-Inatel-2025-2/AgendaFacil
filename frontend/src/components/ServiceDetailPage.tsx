@@ -34,6 +34,7 @@ import { useLanguage } from './LanguageProvider';
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { toast } from "react-hot-toast";
 import { FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
+import { useState, useEffect } from 'react';
 
 interface Service {
   id: string;
@@ -72,13 +73,15 @@ interface ServiceDetailPageProps {
   company: Company;
   categoryTitle: string;
   gradient: string;
+  onOpenFavorites?: () => void;
 }
 
 export function ServiceDetailPage({ 
   onBack, 
   company, 
   categoryTitle, 
-  gradient 
+  gradient,
+  onOpenFavorites,
 }: ServiceDetailPageProps) {
   const { t } = useLanguage();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -91,9 +94,15 @@ export function ServiceDetailPage({
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isFavOpen, setIsFavOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  // estado do coração favorito
   const [isFavorited, setIsFavorited] = useState(false);
+
+  // Quando a página carregar, verifica se esse company já está favoritado
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("favoritos") || "[]");
+    const exists = saved.some((c: Company) => c.id === company.id);
+    setIsFavorited(exists);
+  }, [company.id]);
+
 
   const link = typeof window !== "undefined" ? window.location.href : "";
 
@@ -105,33 +114,50 @@ export function ServiceDetailPage({
   };
 
   const handleFavoriteClick = () => {
-    setIsFavorited(!isFavorited);
+  const saved = JSON.parse(localStorage.getItem("favoritos") || "[]");
 
-    if (!isFavorited) {
-      toast((t) => (
-    <div className="flex flex-col gap-2 bg-white/95 text-gray-900 p-3">
-    <span>Adicionado aos favoritos!</span>
-    <Button
-      size="sm"
-      variant="default"
-      className="bg-emerald-500 border-0 hover:bg-emerald-600 text-white"
-      onClick={() => {
-        toast.dismiss(t.id);
-        setIsFavOpen(true); // abre modal de favoritos
-      }}
-    >
-      VER FAVORITOS
-          </Button>
-        </div>
-      ), {
-        duration: 4000,
-        position: "top-right"
-      });
-
-    } else {
-      toast("Removido dos favoritos", { duration: 1000, position: "top-right" });
+  if (!isFavorited) {
+    // Adicionar — mas sem duplicar
+    if (!saved.some((c: Company) => c.id === company.id)) {
+      saved.push(company);
+      localStorage.setItem("favoritos", JSON.stringify(saved));
     }
-  };
+
+    setIsFavorited(true);
+
+    toast((t) => (
+      <div className="flex flex-col gap-2 bg-white/95 text-gray-900 p-3">
+        <span>Adicionado aos favoritos!</span>
+        <Button
+          size="sm"
+          className="bg-emerald-500 text-white hover:bg-emerald-600"
+          onClick={() => {
+            toast.dismiss(t.id);
+            onOpenFavorites?.();
+          }}
+        >
+          Ver favoritos
+        </Button>
+      </div>
+    ), {
+      duration: 4000,
+      position: "top-right"
+    });
+
+  } else {
+    // Remover
+    const filtered = saved.filter((c: Company) => c.id !== company.id);
+    localStorage.setItem("favoritos", JSON.stringify(filtered));
+
+    setIsFavorited(false);
+
+    toast("Removido dos favoritos", {
+      duration: 1000,
+      position: "top-right"
+    });
+  }
+};
+
 
   const handleOpenConfirm = (service: Service, time: string) => {
   setSelectedService(service);

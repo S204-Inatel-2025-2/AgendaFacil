@@ -17,7 +17,7 @@ import { ServiceCategoryPage } from './components/ServiceCategoryPage';
 import { AppointmentsPage } from './components/AppointmentsPage';
 import CreateServicePage from "./components/CreateServicePage";
 import { ProfilePage } from './components/ProfilePage';
-
+import { FavoritesPage } from './components/FavoritesPage';
 
 // Apple-style Loading Component
 function AppleLoadingScreen() {
@@ -172,7 +172,7 @@ function RedirectingScreen() {
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail' | 'appointments' | 'create-service' | 'profile'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'login' | 'register' | 'service-category' | 'service-detail' | 'appointments' | 'create-service' | 'profile' | 'favorites'>('home');
   const [currentServiceCategory, setCurrentServiceCategory] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
 
@@ -360,6 +360,7 @@ function AppContent() {
             company={selectedCompany}
             categoryTitle={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].title}
             gradient={serviceCategories[currentServiceCategory as keyof typeof serviceCategories].gradient}
+            onOpenFavorites={() => setCurrentPage("favorites")}
           />
         )}
 
@@ -392,6 +393,17 @@ function AppContent() {
           />
         </ApplePageTransition>
       )}
+
+      {currentPage === "favorites" && (
+        <FavoritesPage
+          onBack={() => setCurrentPage("home")}
+          onSelect={(company) => {
+            setSelectedCompany(company);
+            setCurrentPage("service-detail");
+          }}
+        />
+      )}
+
 
       {!isLoading && currentPage === 'profile' && (
         <ApplePageTransition key="profile">
