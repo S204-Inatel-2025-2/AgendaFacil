@@ -34,6 +34,7 @@ import { useLanguage } from './LanguageProvider';
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { toast } from "react-hot-toast";
 import { FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
+import { useAuth } from '../hooks/useAuth';
 
 
 interface Service {
@@ -84,6 +85,7 @@ export function ServiceDetailPage({
   onOpenFavorites,
 }: ServiceDetailPageProps) {
   const { t } = useLanguage();
+  const { isEmpresa, isAuthenticated, user} = useAuth();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -300,10 +302,18 @@ export function ServiceDetailPage({
                 <Heart className={`w-4 h-4 ${isFavorited ? "text-red-500 fill-current" : ""}`} />
               </Button>
 
-              <Button variant={isProviderMode ? "default" : "outline"} size="sm" onClick={() => setIsProviderMode(!isProviderMode)}>
-                <Settings className="w-4 h-4 mr-2" />
-                {isProviderMode ? 'Modo Cliente' : 'Modo Prestador'}
-              </Button>
+              {/* Só mostra o botão de modo prestador se for empresa logada */}
+              {isAuthenticated && isEmpresa && (
+                <Button 
+                  variant={isProviderMode ? "default" : "outline"} 
+                  size="sm" 
+                  onClick={() => setIsProviderMode(!isProviderMode)}
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  {isProviderMode ? 'Modo Cliente' : 'Modo Prestador'}
+                </Button>
+              )}
+
             </div>
           </div>
         </div>
