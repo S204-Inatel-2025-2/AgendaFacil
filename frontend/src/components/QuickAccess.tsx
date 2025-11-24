@@ -6,15 +6,11 @@ import { useLanguage } from './LanguageProvider';
 
 interface QuickAccessProps {
   onOpenFavorites?: () => void;
+  onAppointmentsClick?: () => void;
 }
 
-export function QuickAccess({onOpenFavorites}: QuickAccessProps) {
+export function QuickAccess({onOpenFavorites, onAppointmentsClick}: QuickAccessProps) {
   const { t } = useLanguage();
-
-  
-  const handleAppointmentsClick = () => {
-    onOpenFavorites?.();
-  };
   
   const quickActions = [
     {
@@ -23,29 +19,31 @@ export function QuickAccess({onOpenFavorites}: QuickAccessProps) {
       description: t.quick_book_desc,
       gradient: 'from-emerald-500 to-green-600',
       delay: 0.1,
-      href: '#appointments',
-      onClick: handleAppointmentsClick //TEM QUE ARRUMAR ISSO AQUI
+      onClick: onAppointmentsClick
     },
     {
       icon: RotateCcw,
       title: t.quick_reschedule,
       description: t.quick_reschedule_desc,
       gradient: 'from-blue-500 to-cyan-600',
-      delay: 0.2
+      delay: 0.2,
+      onClick: onAppointmentsClick
     },
     {
       icon: History,
       title: t.quick_history,
       description: t.quick_history_desc,
       gradient: 'from-purple-500 to-indigo-600',
-      delay: 0.3
+      delay: 0.3,
+      onClick: onAppointmentsClick
     },
     {
       icon: Heart,
       title: t.quick_favorites,
       description: t.quick_favorites_desc,
       gradient: 'from-pink-500 to-rose-600',
-      delay: 0.4
+      delay: 0.4,
+      onClick: onOpenFavorites
     }
   ];
 

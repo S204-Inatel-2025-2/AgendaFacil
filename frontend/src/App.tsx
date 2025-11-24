@@ -308,6 +308,8 @@ function AppContent() {
                 viewport={{ once: true, margin: "-100px" }}
               >
                 <QuickAccess
+                  onOpenFavorites={() => setCurrentPage("favorites")}
+                  onAppointmentsClick={handleAppointmentsClick}
                 />
               </motion.div>
           
