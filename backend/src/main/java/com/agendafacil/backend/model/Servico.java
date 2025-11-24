@@ -42,6 +42,10 @@ public class Servico {
     @JoinColumn(name = "usuario_agendado_id")
     private User usuarioAgendado;
 
+    @ManyToOne
+    @JoinColumn(name = "empresa_id", nullable = false)
+    private Empresa empresa;
+
     public Servico(){}
 
     public Servico(String nome, String categoria, String descricao, int duracao_minutos, BigDecimal preco){
@@ -50,5 +54,14 @@ public class Servico {
         this.descricao = descricao;
         this.duracao_minutos = duracao_minutos;
         this.preco = preco;
+    }
+
+    public Servico(String nome, String categoria, String descricao, int duracao_minutos, BigDecimal preco, Empresa empresa){
+        this.nome = nome;
+        this.categoria = categoria;
+        this.descricao = descricao;
+        this.duracao_minutos = duracao_minutos;
+        this.preco = preco;
+        this.empresa = empresa;
     }
 }
