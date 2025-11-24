@@ -19,7 +19,7 @@ public class LoadDatabase {
     CommandLineRunner initDatabase(UserRepository userRepository, EmpresaRepository empresaRepository ){
         return args -> {
             log.info("Preloading " + userRepository.save(new User("Marcelo Lima", "marcelo123@email.com", "123456789", "senha123")));
-            log.info("Preloading: " + empresaRepository.save(new Empresa("TesteLTDA", "Teste da Silva LTDA", "123456789000", "teste@ltda.com", "3540028922" )));
+            log.info("Preloading: " + empresaRepository.save(new Empresa("TesteLTDA", "Teste da Silva LTDA", "123456789000", "teste@ltda.com", "3540028922", "senha123")));
         }; 
     }
 }

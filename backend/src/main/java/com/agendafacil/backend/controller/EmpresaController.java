@@ -11,7 +11,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/empresas")
+@RequestMapping("/empresas")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class EmpresaController {
@@ -20,7 +20,12 @@ public class EmpresaController {
 
     @GetMapping("/cnpj/{cnpj}")
     public EmpresaDTO buscarPorCnpj(@PathVariable String cnpj) {
-        return empresaService.obterOuCadastrarEmpresaPorCNPJ(cnpj);
+        return empresaService.consultaCnpj(cnpj);
+    }
+
+    @PostMapping("/cadastrar")
+    public Empresa cadastrarEmpresa(@RequestBody EmpresaDTO empresaDTO) throws Exception{
+        return empresaService.cadastrarEmpresa(empresaDTO);
     }
 
     @GetMapping

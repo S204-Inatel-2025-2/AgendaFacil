@@ -10,6 +10,7 @@ import { Checkbox } from './ui/checkbox';
 import { useLanguage } from './LanguageProvider';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import { authService } from '../services/AuthService';
 
 interface RegisterPageProps {
   onBack: () => void;
@@ -34,12 +35,15 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
   });
   const [empresaFormData, setEmpresaFormData] = useState({
     nome: '',
+    razao_social: '',
     email: '',
     telefone: '',
     cnpj: '',
     senha: '',
     confirmPassword: ''
   });
+  const [cnpjData, setCnpjData] = useState<any>(null);
+  const [isLoadingCNPJ, setIsLoadingCNPJ] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,11 +86,28 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
         return;
       }
       
-      // Temporariamente desabilitado - apenas validação visual
-      setError('Cadastro de empresa temporariamente indisponível. Use o cadastro de Pessoa Física.');
-      toast.error('❌ Cadastro de empresa temporariamente indisponível.');
-      setIsLoading(false);
-      return;
+      try {
+        const response = await authService.registerEmpresa({
+          cnpj: empresaFormData.cnpj,
+          nome: empresaFormData.nome,
+          razao_social: empresaFormData.razao_social,
+          email: empresaFormData.email,
+          telefone: empresaFormData.telefone,
+          senha: empresaFormData.senha
+        });
+        
+        if (response.error) {
+          setError(response.error);
+          toast.error(`❌ ${response.error}`);
+        } else if (response.data) {
+          toast.success('🎉 Empresa cadastrada com sucesso!');
+          onBack();
+        }
+      } catch (err) {
+        setError('Erro inesperado. Tente novamente.');
+        toast.error('❌ Erro ao cadastrar empresa.');
+        console.error('Erro no cadastro:', err);
+      }
     }
     
     setIsLoading(false);
@@ -131,10 +152,37 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
     return numbers.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
   };
 
-  const handleCNPJChange = (value: string) => {
-    const formatted = formatCNPJ(value);
-    handleEmpresaInputChange('cnpj', formatted);
-  };
+const handleCNPJChange = async (value: string) => {
+  const formatted = formatCNPJ(value);
+  handleEmpresaInputChange('cnpj', formatted);
+  
+   // Remove formatação para buscar na API
+  const cleanCNPJ = formatted.replace(/\D/g, '');
+  if (cleanCNPJ.length === 14) {
+    setIsLoadingCNPJ(true);
+    try {
+      const response = await authService.consultarCNPJ(cleanCNPJ);
+      if (response.data) {
+        setCnpjData(response.data); 
+        setEmpresaFormData(prev => ({
+          ...prev,
+          nome: response.data?.nome || '',
+          razao_social: response.data?.razao_social || '',
+          email: response.data?.email || prev.email,
+          telefone: response.data?.telefone || prev.telefone
+        }));
+        toast.success('Dados da empresa encontrados!');
+      } else {
+        toast.error('CNPJ não encontrado');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar CNPJ:', error);
+      toast.error('Erro ao consultar CNPJ');
+    } finally {
+      setIsLoadingCNPJ(false);
+    }
+  }
+};
 
   const handleEmpresaPhoneChange = (value: string) => {
     const formatted = formatPhone(value);
@@ -470,7 +518,13 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                           className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
                           maxLength={18}
                           required
+                          disabled={isLoadingCNPJ}
                         />
+                        {isLoadingCNPJ && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </>
