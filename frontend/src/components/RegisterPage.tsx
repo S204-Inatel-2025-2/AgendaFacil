@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, ArrowLeft, Apple, Smartphone, User, Phone, Check } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Apple, Smartphone, User, Phone, ArrowLeft, Building2, Users } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -8,6 +8,9 @@ import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import { Checkbox } from './ui/checkbox';
 import { useLanguage } from './LanguageProvider';
+import { useAuth } from '../hooks/useAuth';
+import toast from 'react-hot-toast';
+import { authService } from '../services/AuthService';
 
 interface RegisterPageProps {
   onBack: () => void;
@@ -16,42 +19,109 @@ interface RegisterPageProps {
 
 export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
   const { t } = useLanguage();
+  const { register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [registerType, setRegisterType] = useState<'user' | 'empresa'>('user');
   const [formData, setFormData] = useState({
-    name: '',
+    nome_completo: '',
     email: '',
-    phone: '',
-    password: '',
+    telefone: '',
+    senha: '',
     confirmPassword: ''
   });
+  const [empresaFormData, setEmpresaFormData] = useState({
+    nome: '',
+    razao_social: '',
+    email: '',
+    telefone: '',
+    cnpj: '',
+    senha: '',
+    confirmPassword: ''
+  });
+  const [cnpjData, setCnpjData] = useState<any>(null);
+  const [isLoadingCNPJ, setIsLoadingCNPJ] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      alert('As senhas não coincidem');
-      return;
-    }
-    
-    if (!agreeTerms) {
-      alert('Você deve aceitar os termos de uso');
-      return;
-    }
-    
     setIsLoading(true);
+    setError(null);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2500));
+    if (registerType === 'user') {
+      // Validação de senha para usuário
+      if (formData.senha !== formData.confirmPassword) {
+        setError('As senhas não coincidem');
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        const success = await register({
+          nome_completo: formData.nome_completo,
+          email: formData.email,
+          telefone: formData.telefone,
+          senha: formData.senha
+        });
+        
+        if (success) {
+          toast.success('🎉 Cadastro realizado com sucesso! Bem-vindo ao AgendaFácil!');
+          console.log('Cadastro realizado com sucesso!');
+          onBack();
+        } else {
+          setError('Erro no cadastro. Tente novamente.');
+          toast.error('❌ Erro no cadastro. Verifique os dados e tente novamente.');
+        }
+      } catch (err) {
+        setError('Erro inesperado. Tente novamente.');
+        console.error('Erro no cadastro:', err);
+      }
+    } else {
+      // Validação de senha para empresa
+      if (empresaFormData.senha !== empresaFormData.confirmPassword) {
+        setError('As senhas não coincidem');
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        const response = await authService.registerEmpresa({
+          cnpj: empresaFormData.cnpj,
+          nome: empresaFormData.nome,
+          razao_social: empresaFormData.razao_social,
+          email: empresaFormData.email,
+          telefone: empresaFormData.telefone,
+          senha: empresaFormData.senha
+        });
+        
+        if (response.error) {
+          setError(response.error);
+          toast.error(`❌ ${response.error}`);
+        } else if (response.data) {
+          toast.success('🎉 Empresa cadastrada com sucesso!');
+          onBack();
+        }
+      } catch (err) {
+        setError('Erro inesperado. Tente novamente.');
+        toast.error('❌ Erro ao cadastrar empresa.');
+        console.error('Erro no cadastro:', err);
+      }
+    }
     
-    console.log('Register attempt:', formData);
     setIsLoading(false);
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleEmpresaInputChange = (field: string, value: string) => {
+    setEmpresaFormData(prev => ({
       ...prev,
       [field]: value
     }));
@@ -71,8 +141,54 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
 
   const handlePhoneChange = (value: string) => {
     const formatted = formatPhone(value);
-    handleInputChange('phone', formatted);
+    handleInputChange('telefone', formatted);
   };
+
+  const formatCNPJ = (value: string) => {
+    // Remove all non-numeric characters
+    const numbers = value.replace(/\D/g, '');
+    
+    // Apply CNPJ format: XX.XXX.XXX/XXXX-XX
+    return numbers.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+  };
+
+const handleCNPJChange = async (value: string) => {
+  const formatted = formatCNPJ(value);
+  handleEmpresaInputChange('cnpj', formatted);
+  
+   // Remove formatação para buscar na API
+  const cleanCNPJ = formatted.replace(/\D/g, '');
+  if (cleanCNPJ.length === 14) {
+    setIsLoadingCNPJ(true);
+    try {
+      const response = await authService.consultarCNPJ(cleanCNPJ);
+      if (response.data) {
+        setCnpjData(response.data); 
+        setEmpresaFormData(prev => ({
+          ...prev,
+          nome: response.data?.nome || '',
+          razao_social: response.data?.razao_social || '',
+          email: response.data?.email || prev.email,
+          telefone: response.data?.telefone || prev.telefone
+        }));
+        toast.success('Dados da empresa encontrados!');
+      } else {
+        toast.error('CNPJ não encontrado');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar CNPJ:', error);
+      toast.error('Erro ao consultar CNPJ');
+    } finally {
+      setIsLoadingCNPJ(false);
+    }
+  }
+};
+
+  const handleEmpresaPhoneChange = (value: string) => {
+    const formatted = formatPhone(value);
+    handleEmpresaInputChange('telefone', formatted);
+  };
+
 
   const pageVariants = {
     initial: { 
@@ -85,8 +201,7 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.8,
-        ease: [0.23, 1, 0.32, 1]
+        duration: 0.8
       }
     },
     exit: { 
@@ -94,8 +209,7 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
       y: -10,
       scale: 1.02,
       transition: {
-        duration: 0.6,
-        ease: [0.23, 1, 0.32, 1]
+        duration: 0.6
       }
     }
   };
@@ -112,8 +226,7 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
       scale: 1,
       transition: {
         duration: 0.8,
-        delay: 0.2,
-        ease: [0.23, 1, 0.32, 1]
+        delay: 0.2
       }
     }
   };
@@ -157,21 +270,22 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
         />
       </div>
 
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+      <div className="relative z-10 flex items-center justify-center min-h-screen p-4 pt-18">
         <div className="w-full max-w-md">
           {/* Back button */}
           <motion.div
-            className="mb-8"
+            className="mb-2"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
+            transition={{ delay: 0.1 }}
           >
             <Button
-              variant="ghost"
               onClick={onBack}
-              className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground px-2 py-1 h-8 text-sm"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="w-4 h-4" />
               {t.back_to_home}
             </Button>
           </motion.div>
@@ -207,14 +321,58 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                 </motion.h1>
                 
                 <motion.p
-                  className="text-muted-foreground"
+                  className="text-muted-foreground mb-2"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
                 >
                   {t.register_subtitle}
                 </motion.p>
+
+                {/* Tipo de cadastro */}
+                <motion.div
+                  className="flex bg-muted/50 rounded-lg p-1"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setRegisterType('user')}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      registerType === 'user'
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Users className="w-4 h-4" />
+                    Pessoa Física
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRegisterType('empresa')}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      registerType === 'empresa'
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Building2 className="w-4 h-4" />
+                    Empresa
+                  </button>
+                </motion.div>
               </div>
+
+              {/* Error message */}
+              {error && (
+                <motion.div
+                  className="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {error}
+                </motion.div>
+              )}
 
               {/* Register form */}
               <motion.form
@@ -224,63 +382,153 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7 }}
               >
-                {/* Name field */}
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium">
-                    {t.register_name}
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder={t.register_name_placeholder}
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
-                      required
-                    />
-                  </div>
-                </div>
+                {registerType === 'user' ? (
+                  <>
+                    {/* Name field */}
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-sm font-medium">
+                        {t.register_name}
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="name"
+                          type="text"
+                          placeholder={t.register_name_placeholder}
+                          value={formData.nome_completo}
+                          onChange={(e) => handleInputChange('nome_completo', e.target.value)}
+                          className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                          required
+                        />
+                      </div>
+                    </div>
 
-                {/* Email field */}
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    {t.register_email}
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder={t.register_email_placeholder}
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
-                      required
-                    />
-                  </div>
-                </div>
+                    {/* Email field */}
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium">
+                        {t.register_email}
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder={t.register_email_placeholder}
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                          required
+                        />
+                      </div>
+                    </div>
 
-                {/* Phone field */}
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-sm font-medium">
-                    {t.register_phone}
-                  </Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder={t.register_phone_placeholder}
-                      value={formData.phone}
-                      onChange={(e) => handlePhoneChange(e.target.value)}
-                      className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
-                      maxLength={15}
-                      required
-                    />
-                  </div>
-                </div>
+                    {/* Phone field */}
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-sm font-medium">
+                        {t.register_phone}
+                      </Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder={t.register_phone_placeholder}
+                          value={formData.telefone}
+                          onChange={(e) => handlePhoneChange(e.target.value)}
+                          className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                          maxLength={15}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Nome da empresa */}
+                    <div className="space-y-2">
+                      <Label htmlFor="empresa-nome" className="text-sm font-medium">
+                        Nome da Empresa
+                      </Label>
+                      <div className="relative">
+                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="empresa-nome"
+                          type="text"
+                          placeholder="Digite o nome da empresa"
+                          value={empresaFormData.nome}
+                          onChange={(e) => handleEmpresaInputChange('nome', e.target.value)}
+                          className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Email da empresa */}
+                    <div className="space-y-2">
+                      <Label htmlFor="empresa-email" className="text-sm font-medium">
+                        E-mail da Empresa
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="empresa-email"
+                          type="email"
+                          placeholder="contato@empresa.com"
+                          value={empresaFormData.email}
+                          onChange={(e) => handleEmpresaInputChange('email', e.target.value)}
+                          className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Telefone da empresa */}
+                    <div className="space-y-2">
+                      <Label htmlFor="empresa-phone" className="text-sm font-medium">
+                        Telefone da Empresa
+                      </Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="empresa-phone"
+                          type="tel"
+                          placeholder="(11) 99999-9999"
+                          value={empresaFormData.telefone}
+                          onChange={(e) => handleEmpresaPhoneChange(e.target.value)}
+                          className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                          maxLength={15}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* CNPJ */}
+                    <div className="space-y-2">
+                      <Label htmlFor="cnpj" className="text-sm font-medium">
+                        CNPJ da Empresa
+                      </Label>
+                      <div className="relative">
+                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="cnpj"
+                          type="text"
+                          placeholder="00.000.000/0000-00"
+                          value={empresaFormData.cnpj}
+                          onChange={(e) => handleCNPJChange(e.target.value)}
+                          className="pl-10 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                          maxLength={18}
+                          required
+                          disabled={isLoadingCNPJ}
+                        />
+                        {isLoadingCNPJ && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {/* Password field */}
                 <div className="space-y-2">
@@ -293,8 +541,11 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder={t.register_password_placeholder}
-                      value={formData.password}
-                      onChange={(e) => handleInputChange('password', e.target.value)}
+                      value={registerType === 'user' ? formData.senha : empresaFormData.senha}
+                      onChange={(e) => registerType === 'user' 
+                        ? handleInputChange('senha', e.target.value)
+                        : handleEmpresaInputChange('senha', e.target.value)
+                      }
                       className="pl-10 pr-12 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
                       required
                       minLength={6}
@@ -324,8 +575,11 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder={t.register_confirm_password_placeholder}
-                      value={formData.confirmPassword}
-                      onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                      value={registerType === 'user' ? formData.confirmPassword : empresaFormData.confirmPassword}
+                      onChange={(e) => registerType === 'user' 
+                        ? handleInputChange('confirmPassword', e.target.value)
+                        : handleEmpresaInputChange('confirmPassword', e.target.value)
+                      }
                       className="pl-10 pr-12 h-12 bg-input-background border-border/50 focus:border-primary/50 focus:ring-primary/20"
                       required
                       minLength={6}
@@ -393,7 +647,7 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                       {t.register_loading}
                     </motion.div>
                   ) : (
-                    t.register_submit
+                    registerType === 'user' ? t.register_submit : 'Cadastrar Empresa'
                   )}
                 </Button>
               </motion.form>

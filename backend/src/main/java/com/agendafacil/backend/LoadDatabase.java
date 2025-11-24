@@ -1,0 +1,25 @@
+package com.agendafacil.backend;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.agendafacil.backend.repository.UserRepository;
+import com.agendafacil.backend.model.User;
+import com.agendafacil.backend.repository.EmpresaRepository;
+import com.agendafacil.backend.model.Empresa;;
+
+@Configuration
+public class LoadDatabase {
+    private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
+
+    @Bean
+    CommandLineRunner initDatabase(UserRepository userRepository, EmpresaRepository empresaRepository ){
+        return args -> {
+            log.info("Preloading " + userRepository.save(new User("Marcelo Lima", "marcelo123@email.com", "123456789", "senha123")));
+            log.info("Preloading: " + empresaRepository.save(new Empresa("TesteLTDA", "Teste da Silva LTDA", "123456789000", "teste@ltda.com", "3540028922", "senha123")));
+        }; 
+    }
+}

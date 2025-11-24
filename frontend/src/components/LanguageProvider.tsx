@@ -8,11 +8,10 @@ const translations = {
     loading_subtitle: "Conectando você aos melhores serviços",
     
     // Header
-    nav_services: "Serviços",
-    nav_schedule: "Agendar",
+    nav_historico: "Histórico",
     nav_my_appointments: "Meus Agendamentos",
-    nav_about: "Sobre",
-    nav_contact: "Contato",
+    nav_fav: "Favoritos",
+    nav_reagendar: "Reagendar",
     nav_help: "Ajuda",
     login: "Entrar",
     register: "Cadastrar",
@@ -20,8 +19,7 @@ const translations = {
     // Hero Section
     hero_title: "Agende seus serviços com facilidade",
     hero_subtitle: "Conectamos você aos melhores profissionais da sua região. Agendamento online rápido, seguro e confiável.",
-    hero_cta_primary: "Agendar Agora",
-    hero_cta_secondary: "Ver Serviços",
+    hero_cta_primary: "Cadastrar meus serviços",
     hero_stats_providers: "Profissionais",
     hero_stats_bookings: "Agendamentos",
     hero_stats_cities: "Cidades",
@@ -44,8 +42,8 @@ const translations = {
     // Quick Access
     quick_access_title: "Acesso Rápido",
     quick_access_subtitle: "Principais funcionalidades em um clique",
-    quick_book: "Agendar Serviço",
-    quick_book_desc: "Reserve seu horário rapidamente",
+    quick_book: "Meus agendamentos",
+    quick_book_desc: "Acesse seus agendamentos",
     quick_reschedule: "Reagendar",
     quick_reschedule_desc: "Altere seus agendamentos",
     quick_history: "Histórico",
@@ -97,33 +95,6 @@ const translations = {
     edu_chemistry: "Química",
     edu_music: "Música",
     
-    // News Section
-    news_title: "Novidades",
-    news_subtitle: "Fique por dentro das últimas atualizações",
-    news_1_title: "Novos profissionais na plataforma",
-    news_1_excerpt: "Mais de 500 novos prestadores de serviço se cadastraram este mês",
-    news_2_title: "App móvel disponível",
-    news_2_excerpt: "Baixe nosso aplicativo e agende serviços pelo seu smartphone",
-    news_3_title: "Sistema de avaliações atualizado",
-    news_3_excerpt: "Nova interface para avaliar e comentar sobre os serviços",
-    
-    // Agenda Section
-    agenda_title: "Agenda Inteligente",
-    agenda_subtitle: "Visualize e gerencie seus agendamentos",
-    agenda_today: "Hoje",
-    agenda_week: "Semana",
-    agenda_month: "Mês",
-    agenda_no_appointments: "Nenhum agendamento para hoje",
-    agenda_book_service: "Agendar Serviço",
-    
-    // Transparency/Reviews Section
-    reviews_title: "Avaliações e Transparência",
-    reviews_subtitle: "Veja o que nossos usuários estão dizendo",
-    reviews_average: "Avaliação Média",
-    reviews_total: "Total de Avaliações",
-    reviews_5_star: "5 Estrelas",
-    reviews_4_star: "4 Estrelas",
-    
     // Testimonials
     testimonials_title: "Depoimentos",
     testimonials_subtitle: "Experiências reais de nossos usuários",
@@ -158,7 +129,7 @@ const translations = {
     footer_newsletter_desc: "Receba novidades e promoções",
     footer_newsletter_placeholder: "Seu e-mail",
     footer_newsletter_subscribe: "Inscrever",
-    footer_copyright: "© 2024 AgendaFácil. Todos os direitos reservados.",
+    footer_copyright: "© 2025 AgendaFácil. Todos os direitos reservados.",
     
     // Floating Buttons
     theme_toggle: "Alternar tema",
@@ -229,6 +200,21 @@ const translations = {
     register_login_link: "Entre agora",
     register_terms_text: "Ao se cadastrar, você concorda com nossos",
     back_to_login: "Voltar ao login",
+
+    // Forgot Password Page
+    forgot_password_title: "Esqueceu sua senha?",
+    forgot_password_subtitle: "Digite seu email e enviaremos um link para redefinir sua senha",
+    forgot_password_email: "Email",
+    forgot_password_email_placeholder: "Digite seu email",
+    forgot_password_submit: "Enviar Link de Recuperação",
+    forgot_password_loading: "Enviando...",
+    forgot_password_back_to_login: "Lembrou da senha?",
+    forgot_password_login_link: "Fazer login",
+    forgot_password_success_title: "Email Enviado!",
+    forgot_password_success_message: "Enviamos um link de recuperação para",
+    forgot_password_success_instructions: "Verifique sua caixa de entrada e siga as instruções.",
+    forgot_password_back_to_login_button: "Voltar ao Login",
+    forgot_password_resend_button: "Enviar Novamente",
 
     // Time and Date
     monday: "Segunda",

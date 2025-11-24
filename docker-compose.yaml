@@ -31,7 +31,8 @@ services:
       - app_net
 
   backend:
-    image: ghcr.io/s204-inatel-2025-2/agendafacil/backend:latest
+    build:
+      context: ./backend
     container_name: agenda_backend
     restart: always
     environment:
@@ -46,7 +47,8 @@ services:
       - app_net
 
   frontend:
-    image: ghcr.io/s204-inatel-2025-2/agendafacil/frontend:latest
+    build:
+      context: ./frontend
     container_name: agenda_frontend
     restart: always
     ports:
@@ -55,6 +57,9 @@ services:
       - backend
     networks:
       - app_net
+      
+    environment:
+      - NODE_ENV=production
 
 networks:
   app_net:

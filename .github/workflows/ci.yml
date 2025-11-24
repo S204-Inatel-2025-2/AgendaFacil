@@ -5,14 +5,107 @@ on:
     branches: ["main", "dev"]
   pull_request:
     branches: ["main", "dev"]
-  workflow_dispatch: # permite rodar manualmente
-
+  workflow_dispatch:
 jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do código
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      # Instalar Docker Compose
+      - name: Instalar Docker Compose
+        run: sudo apt-get update && sudo apt-get install -y docker-compose
+
+      # Subir ambiente backend + db com Docker Compose (versão CI)
+      -  name: Subir ambiente de teste (DB + Backend + Frontend)
+         run: docker-compose -f docker-compose.ci.yaml up -d db backend frontend
+
+      #  Mostrar logs do backend (debug)    
+      - name: Mostrar logs do backend (debug)
+        if: always()
+        run: |
+            echo "=== Containers em execução ==="
+            docker ps -a
+            echo "=== Logs do backend ==="
+            ID=$(docker ps -aqf "name=backend" || true)
+            if [ -n "$ID" ]; then
+              docker logs "$ID" || true
+            else
+              echo "Nenhum container do backend encontrado!"
+              docker ps -a
+            fi    
+
+      # Configurar e buildar o frontend
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências e buildar frontend
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
+
+      # Verificar se a tabela 'usuarios' existe e exibir dados
+      - name: Verificar banco e tabela 'usuarios'
+        run: |
+          echo "Aguardando o PostgreSQL inicializar..."
+          for i in {1..5}; do
+            if docker exec postgres_container pg_isready -U usuario -d meu_banco > /dev/null 2>&1; then
+              echo "Banco disponível!"
+              break
+            fi
+            echo "Tentativa $i: aguardando banco..."
+            sleep 3
+          done
+
+          echo "⏳ Aguardando backend criar as tabelas..."
+          sleep 20
+
+          echo "Exibindo registros da tabela 'usuarios'..."
+          docker exec postgres_container psql -U usuario -d meu_banco -c "SELECT * FROM usuarios LIMIT 10;"
+
+          echo "Consulta realizada com sucesso."
+
+      #  Executar testes Cypress
+      - name: Rodar testes Cypress (com backend ativo)
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: ./frontend
+          browser: chrome
+          install: false
+          start: ''
+          wait-on: "http://localhost:4200"
+          wait-on-timeout: 60
+          config: baseUrl=http://localhost:4200
+
+      #  Salvar artefatos dos testes
+      - name: Salvar artefatos do Cypress
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-results
+          path: |
+            frontend/cypress/videos
+            frontend/cypress/screenshots
+          retention-days: 7
+
+      # Derrubar containers ao final
+      - name: Derrubar containers
+        if: always()
+        run: docker-compose -f docker-compose.ci.yaml down
+
+  #  Build e push das imagens para o GitHub Container Registry
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write  # necessário para enviar ao GHCR
+      packages: write
+
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -24,24 +117,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # ---------- FRONTEND ----------
-      - name: Build imagem FRONTEND
+      # FRONTEND
+      - name: Build e Push do FRONTEND
         run: |
           docker build -t ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ./frontend
-          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/frontend:latest
-
-      - name: Push imagem FRONTEND
-        run: |
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA}
+          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/frontend:latest
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/frontend:latest
 
-      # ---------- BACKEND ----------
-      - name: Build imagem BACKEND (Spring Boot)
+      # BACKEND
+      - name: Build e Push do BACKEND
         run: |
           docker build -t ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ./backend
-          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
-
-      - name: Push imagem BACKEND
-        run: |
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA}
+          docker tag ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
