@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, 
@@ -34,7 +34,7 @@ import { useLanguage } from './LanguageProvider';
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { toast } from "react-hot-toast";
 import { FaWhatsapp, FaTelegramPlane } from "react-icons/fa";
-import { useState, useEffect } from 'react';
+
 
 interface Service {
   id: string;
