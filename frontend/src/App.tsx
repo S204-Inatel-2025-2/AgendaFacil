@@ -274,7 +274,7 @@ function AppContent() {
         <Header 
           onLoginClick={() => setCurrentPage('login')}
           onRegisterClick={() => setCurrentPage('register')}
-          onAppointmentsClick={handleAppointmentsClick}
+          onOpenFavorites={() => setCurrentPage("favorites")}
           onLogoutClick={handleLogoutClick}
           onProfileClick={() => setCurrentPage('profile')}
         />

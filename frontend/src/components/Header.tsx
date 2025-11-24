@@ -9,12 +9,12 @@ import toast from 'react-hot-toast';
 interface HeaderProps {
   onLoginClick?: () => void;
   onRegisterClick?: () => void;
-  onAppointmentsClick?: () => void;
+  onOpenFavorites?: () => void;
   onLogoutClick?: () => void;
   onProfileClick?: () => void;
 }
 
-export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onLogoutClick, onProfileClick }: HeaderProps) {
+export function Header({ onLoginClick, onRegisterClick, onOpenFavorites, onLogoutClick, onProfileClick }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -56,7 +56,7 @@ export function Header({ onLoginClick, onRegisterClick, onAppointmentsClick, onL
   }, []);
 
   const handleAppointmentsClick = () => {
-    onAppointmentsClick?.();
+    onOpenFavorites?.();
   };
 
   const navItems = [
