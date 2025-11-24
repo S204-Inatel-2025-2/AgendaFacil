@@ -9,6 +9,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.agendafacil.backend.model.Servico;
 import com.agendafacil.backend.repository.ServicoRepository;
+import com.agendafacil.backend.model.Empresa;
+import com.agendafacil.backend.repository.EmpresaRepository;
 
 import com.agendafacil.backend.model.User;
 
@@ -18,9 +20,17 @@ public class ServicoService {
     private ServicoRepository servicoRepository;
     
     @Autowired
+    private EmpresaRepository empresaRepository;
+    @Autowired
     private UserService userService;
 
-    public Servico cadastrar(Servico servico){
+
+
+    public Servico cadastrar(Servico servico, Long empresaId){
+        Empresa empresa = empresaRepository.findById(empresaId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada!"));
+        
+        servico.setEmpresa(empresa);
         return servicoRepository.save(servico);
     }
 
@@ -33,7 +43,6 @@ public class ServicoService {
         return servicoRepository.findByCategoria(categoria);
     }
 
-    //todo: filtrar por agendados
     public List<Servico> findAll(){
         return servicoRepository.findByAgendadoFalse();
     }
@@ -42,6 +51,13 @@ public class ServicoService {
         return servicoRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Servico não encontrado"));
     }
+
+    public List<Servico> findByEmpresaId(Long empresaId){
+        Empresa empresa = empresaRepository.findById(empresaId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+        return servicoRepository.findByEmpresa(empresa);
+    }
+
     public void deletar(Long id){
         servicoRepository.deleteById(id);
     }

@@ -16,5 +16,5 @@ public class ServicoDTO {
     private String descricao;
     private int duracao_minutos;
     private BigDecimal preco;
-
+    private Long empresaId;
 }
