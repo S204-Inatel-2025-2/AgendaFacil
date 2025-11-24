@@ -20,8 +20,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y docker-compose
 
       # Subir ambiente backend + db com Docker Compose (versão CI)
-      - name: Subir ambiente de teste (DB + Backend)
-        run: docker-compose -f docker-compose.ci.yaml up -d db backend
+      -  name: Subir ambiente de teste (DB + Backend + Frontend)
+         run: docker-compose -f docker-compose.ci.yaml up -d db backend frontend
 
       #  Mostrar logs do backend (debug)    
       - name: Mostrar logs do backend (debug)
@@ -77,9 +77,11 @@ jobs:
         with:
           working-directory: ./frontend
           browser: chrome
-          start: npx http-server dist -p 5173
-          wait-on: "http://localhost:5173"
+          install: false
+          start: ''
+          wait-on: "http://localhost:4200"
           wait-on-timeout: 60
+          config: baseUrl=http://localhost:4200
 
       #  Salvar artefatos dos testes
       - name: Salvar artefatos do Cypress
