@@ -5,15 +5,15 @@ import { Button } from './ui/button';
 import { useLanguage } from './LanguageProvider';
 
 interface QuickAccessProps {
-  onAppointmentsClick?: () => void;
+  onOpenFavorites?: () => void;
 }
 
-export function QuickAccess({onAppointmentsClick}: QuickAccessProps) {
+export function QuickAccess({onOpenFavorites}: QuickAccessProps) {
   const { t } = useLanguage();
 
   
   const handleAppointmentsClick = () => {
-    onAppointmentsClick?.();
+    onOpenFavorites?.();
   };
   
   const quickActions = [
