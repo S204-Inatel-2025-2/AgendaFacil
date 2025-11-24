@@ -42,7 +42,7 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
         onBack(); // Volta para a página principal
       } else {
         setError('Email ou senha inválidos');
-        toast.error('❌ Email ou senha inválidos. Tente novamente.');
+        toast.error(' Email ou senha inválidos. Tente novamente.');
       }
     } catch (err) {
       setError('Erro inesperado. Tente novamente.');
