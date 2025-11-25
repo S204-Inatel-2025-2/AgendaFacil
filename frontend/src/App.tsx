@@ -18,6 +18,8 @@ import { AppointmentsPage } from './components/AppointmentsPage';
 import CreateServicePage from "./components/CreateServicePage";
 import { ProfilePage } from './components/ProfilePage';
 import { FavoritesPage } from './components/FavoritesPage';
+import { empresaService } from './services/EmpresaService';
+import toast from 'react-hot-toast';
 
 // Apple-style Loading Component
 function AppleLoadingScreen() {
@@ -111,7 +113,6 @@ function ApplePageTransition({ children }: { children: React.ReactNode }) {
 
 // Apple-style Redirecting Screen
 function RedirectingScreen() {
-
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-background"
@@ -176,14 +177,86 @@ function AppContent() {
   const [currentServiceCategory, setCurrentServiceCategory] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
 
-  const handleServiceCategoryClick = (categoryKey: string) => {
-    setCurrentServiceCategory(categoryKey);
-    setCurrentPage('service-category');
+  // Importar no topo do arquivo (depois dos imports existentes):
+  // import { empresaService } from './services/EmpresaService';
+  // import toast from 'react-hot-toast';
+
+  // FunÃ§Ã£o para buscar empresa do backend
+  const loadCompanyFromBackend = async (empresaId: string) => {
+    setIsLoading(true);
+    try {
+      const id = parseInt(empresaId);
+      if (isNaN(id)) {
+        toast.error('ID de empresa inválido');
+        return;
+      }
+
+      // Buscar empresa do backend
+      const response = await empresaService.buscarPorId(id);
+      
+      if (response.error || !response.data) {
+        toast.error('Empresa não encontrada');
+        console.error('Erro ao buscar empresa:', response.error);
+        return;
+      }
+
+      // Converter empresa do backend para formato do frontend
+      const empresaBackend = response.data;
+      const empresaFormatada = {
+        id: empresaBackend.id.toString(),
+        name: empresaBackend.nome,
+        description: `${empresaBackend.razao_social}`,
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80', // Imagem padrão
+        rating: 4.8,
+        reviews: 0,
+        location: 'Localização não informada',
+        services: ['Serviços diversos'],
+        availability: 'Consulte disponibilidade',
+        price: 'A consultar',
+        phone: empresaBackend.telefone || 'Não informado',
+        verified: true
+      };
+
+      setSelectedCompany(empresaFormatada);
+      setCurrentServiceCategory('medical'); // Categoria padrão - você pode melhorar isso depois
+      setCurrentPage('service-detail');
+    } catch (error) {
+      console.error('Erro ao carregar empresa:', error);
+      toast.error('Erro ao carregar empresa');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // Verificar URL para acessar empresa específica
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const empresaId = urlParams.get('empresa');
+    
+    if (empresaId) {
+      loadCompanyFromBackend(empresaId);
+    }
+  }, []);
+
+  // Atualizar URL quando empresa for selecionada
   const handleCompanySelect = (company: any) => {
     setSelectedCompany(company);
     setCurrentPage('service-detail');
+    
+    // Atualizar URL sem recarregar a pÃ¡gina
+    const url = new URL(window.location.href);
+    url.searchParams.set('empresa', company.id);
+    window.history.pushState({}, '', url);
+  };
+
+  const handleServiceCategoryClick = (categoryKey: string) => {
+    setCurrentServiceCategory(categoryKey);
+    setCurrentPage('service-category');
+    
+    // Limpar parÃ¢metro de empresa da URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete('empresa');
+    window.history.pushState({}, '', url);
   };
 
   const handleAppointmentsClick = async () => {
@@ -204,11 +277,16 @@ function AppContent() {
   };
 
   const handleCreateServiceClick = () => {
-  setCurrentPage("create-service");
-};
+    setCurrentPage("create-service");
+  };
 
   const handleLogoutClick = () => {
     setCurrentPage('home');
+    
+    // Limpar URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete('empresa');
+    window.history.pushState({}, '', url);
   };
 
   useEffect(() => {
@@ -257,7 +335,6 @@ function AppContent() {
       transition: {
         duration: 0.8,
         ease: [0.23, 1, 0.32, 1] as [number, number, number, number]
-
       }
     }
   };
@@ -269,7 +346,7 @@ function AppContent() {
         {isRedirecting && <RedirectingScreen key="redirecting" />}
       </AnimatePresence>
 
-    {/* Header fixo em todas as páginas */}
+      {/* Header fixo em todas as páginas */}
       {!isLoading && (
         <Header 
           onLoginClick={() => setCurrentPage('login')}
@@ -308,7 +385,6 @@ function AppContent() {
               >
                 <QuickAccess />
               </motion.div>
-          
             </main>
             
             <motion.div
@@ -319,11 +395,10 @@ function AppContent() {
             >
               <Footer />
             </motion.div>
-          
           </ApplePageTransition>
         )}
 
-         {!isLoading && currentPage === 'login' && (
+        {!isLoading && currentPage === 'login' && (
           <LoginPage 
             key="login" 
             onBack={() => setCurrentPage('home')}
@@ -339,7 +414,7 @@ function AppContent() {
           />
         )}
 
-         {!isLoading && currentPage === 'service-category' && currentServiceCategory && (
+        {!isLoading && currentPage === 'service-category' && currentServiceCategory && (
           <ServiceCategoryPage
             key={`category-${currentServiceCategory}`}
             onBack={() => setCurrentPage('home')}
@@ -369,21 +444,19 @@ function AppContent() {
             <CreateServicePage onBack={() => setCurrentPage('home')} />
           </ApplePageTransition>
         )}
-
       </AnimatePresence>
-
 
       {/* Apple-style scroll progress indicator - only show on home page */}
       {currentPage === 'home' && (
-      <motion.div
-        className="fixed top-0 left-0 w-full h-0.5 bg-primary z-50 origin-left"
-        style={{
-          scaleX: typeof window !== 'undefined' 
-            ? window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) 
-            : 0
-        }}
-        initial={{ scaleX: 0 }}
-      />
+        <motion.div
+          className="fixed top-0 left-0 w-full h-0.5 bg-primary z-50 origin-left"
+          style={{
+            scaleX: typeof window !== 'undefined' 
+              ? window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) 
+              : 0
+          }}
+          initial={{ scaleX: 0 }}
+        />
       )}
 
       {!isLoading && currentPage === 'appointments' && (
@@ -403,7 +476,6 @@ function AppContent() {
           }}
         />
       )}
-
 
       {!isLoading && currentPage === 'profile' && (
         <ApplePageTransition key="profile">
