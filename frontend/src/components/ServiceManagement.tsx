@@ -599,7 +599,7 @@ export function ServiceManagement({
               <div className="flex items-center justify-center w-16 h-16 bg-muted rounded-full mx-auto mb-4">
                 <AlertCircle className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="font-medium mb-2">Nenhum servi��o cadastrado</h3>
+              <h3 className="font-medium mb-2">Nenhum serviço cadastrado</h3>
               <p className="text-muted-foreground">
                 Este prestador ainda não cadastrou serviços.
               </p>
