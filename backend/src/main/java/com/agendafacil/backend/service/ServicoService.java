@@ -27,9 +27,13 @@ public class ServicoService {
 
 
     public Servico cadastrar(Servico servico, Long empresaId){
+        if(empresaId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Empresa não autenticada");
+        }
+
         Empresa empresa = empresaRepository.findById(empresaId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada!"));
-        
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada!"));    
+
         servico.setEmpresa(empresa);
         return servicoRepository.save(servico);
     }
