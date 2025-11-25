@@ -16,10 +16,22 @@ public class LoadDatabase {
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
     @Bean
-    CommandLineRunner initDatabase(UserRepository userRepository, EmpresaRepository empresaRepository ){
-        return args -> {
-            log.info("Preloading " + userRepository.save(new User("Marcelo Lima", "marcelo123@email.com", "123456789", "senha123")));
-            log.info("Preloading: " + empresaRepository.save(new Empresa("TesteLTDA", "Teste da Silva LTDA", "123456789000", "teste@ltda.com", "3540028922", "senha123")));
-        }; 
-    }
+    CommandLineRunner initDatabase(UserRepository userRepository,EmpresaRepository empresaRepository) {
+    return args -> {
+        userRepository.findByEmail("marcelo123@email.com")
+            .orElseGet(() -> {
+                User u = new User("Marcelo Lima", "marcelo123@email.com",
+                                  "123456789", "senha123");
+                return userRepository.save(u);
+            });
+
+        empresaRepository.findByCnpj("123456789000")
+            .orElseGet(() -> {
+                Empresa e = new Empresa("Empresa Teste", "Empresa Teste LTDA",
+                                        "123456789000", "teste@ltda.com",
+                                        "3540028922");
+                return empresaRepository.save(e);
+            });
+    };
+}
 }
