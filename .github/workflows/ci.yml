@@ -28,8 +28,8 @@ jobs:
       - name: Build imagem FRONTEND
         run: |
           docker build \
-            --build-arg GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-            --build-arg GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            --build-arg GOOGLE_ID=${{ secrets.GOOGLE_ID }} \
+            --build-arg GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
           docker build -t ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ./frontend
           docker tag ghcr.io/${GITHUB_REPOSITORY,,}/frontend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/frontend:latest
 
