@@ -29,7 +29,7 @@ O **Agenda Fácil** é um sistema web desenvolvido para facilitar o agendamento 
 
 ---
 
-# Projeto PostgreSQL + pgAdmin Docker
+# PostgreSQL + pgAdmin Docker
 
 Este projeto usa Docker para rodar **PostgreSQL** e **pgAdmin 4**, permitindo que o grupo trabalhe com o mesmo banco (via backup/importação) sem precisar compartilhar a pasta de dados diretamente.
 
