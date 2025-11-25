@@ -7,7 +7,8 @@ O **Agenda Fácil** é um sistema web desenvolvido para facilitar o agendamento 
 ## Tecnologias Utilizadas
 
 ### **Frontend**
-- **Tailwind CSS** — utilizado para estilização moderna, responsiva e eficiente.
+- **React + Vite** 
+- **Tailwind CSS** 
 
 ### **Backend**
 - **Spring**
