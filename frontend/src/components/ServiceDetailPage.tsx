@@ -303,16 +303,26 @@ export function ServiceDetailPage({
               </Button>
 
               {/* Só mostra o botão de modo prestador se for empresa logada */}
-              {isAuthenticated && isEmpresa && (
-                <Button 
-                  variant={isProviderMode ? "default" : "outline"} 
-                  size="sm" 
-                  onClick={() => setIsProviderMode(!isProviderMode)}
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  {isProviderMode ? 'Modo Cliente' : 'Modo Prestador'}
-                </Button>
-              )}
+              {(() => {
+                const params = new URLSearchParams(window.location.search);
+                const empresaIdFromUrl = params.get("empresa");
+
+                const canShowProviderButton =
+                  isAuthenticated &&
+                  isEmpresa &&
+                  user?.id?.toString() === empresaIdFromUrl;
+
+                return canShowProviderButton ? (
+                  <Button 
+                    variant={isProviderMode ? "default" : "outline"} 
+                    size="sm" 
+                    onClick={() => setIsProviderMode(!isProviderMode)}
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    {isProviderMode ? 'Modo Cliente' : 'Modo Prestador'}
+                  </Button>
+                ) : null;
+              })()}
 
             </div>
           </div>
