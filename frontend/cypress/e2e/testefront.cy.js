@@ -6,8 +6,9 @@ describe("Teste página inicial", () => {
       .and('contain', 'Agende seus serviços com facilidade')
   })
 })
+
 describe("Teste de criação de cadastro", () => {
-  it("Teste do botão de cadastro", () => {
+  it("Verifica se o usuário já é cadastrado", () => {
     cy.visit('/')
 
     cy.contains('button', 'Cadastrar').click()
@@ -24,6 +25,7 @@ describe("Teste de criação de cadastro", () => {
     cy.get('#terms').click()
     cy.get('.space-y-6 > .inline-flex').click()
     cy.get('[style="transform: none;"] > .inline-flex').click()
+    cy.get('.p-3').contains('Erro no cadastro. Tente novamente')
   })
 })
 
@@ -37,8 +39,8 @@ describe("Teste login", () => {
       .should('be.visible')
       .and('contain', 'Entrar na sua conta')
     cy.intercept('POST', '/api/login').as('loginRequest')
-    cy.get('#email').type('sabrina@gmail.com')
-    cy.get('#senha').type('123456789')
+    cy.get('#email').type('marcelo123@email.com')
+    cy.get('#senha').type('senha123')
     cy.get('.space-y-6 > .inline-flex').click()
     cy.wait('@loginRequest')
       .its('response.statusCode')
@@ -97,4 +99,61 @@ describe("Teste beleza e estética", () => {
     cy.get(':nth-child(2) > .text-xl')
 
   });
+
 });
+
+describe("Teste de criação de cadastro de empresa", () => {
+  it("Verifica se a empresa já é cadastrada", () => {
+    cy.visit('/')
+
+    cy.contains('button', 'Cadastrar').click()
+
+    cy.get('.text-2xl')
+      .should('be.visible')
+      .and('contain', 'Crie sua conta')
+
+    cy.get('.bg-muted\\/50 > .text-muted-foreground').click({ force: true })
+    cy.get('#empresa-nome').type('teste', { force: true })
+    cy.get('#empresa-email').type('teste@gmail.com')
+    cy.get('#empresa-phone').type('3599999999')
+    cy.get('#cnpj').type('24.492.886/0001-04')
+    cy.get('#password').type('123456789')
+    cy.get('#confirmPassword').type('123456789')
+    cy.get('#terms').click()
+    cy.get('.space-y-6 > .inline-flex').click()
+    cy.get('.go2072408551').contains('Dados da empresa encontrados!')
+  })
+})
+
+describe("Teste cadastrar meus serviços", () => {
+
+  it("cadastrar serviços", () => {
+    cy.visit('/')
+    cy.contains('Entrar').click()
+    cy.get('.text-2xl')
+      .should('be.visible')
+      .and('contain', 'Entrar na sua conta')
+    cy.intercept('POST', '/api/login').as('loginRequest')
+    cy.get('#email').type('marcelo123@email.com')
+    cy.get('#senha').type('senha123')
+    cy.get('.space-y-6 > .inline-flex').click()
+    cy.wait('@loginRequest')
+      .its('response.statusCode')
+      .should('eq', 200)
+    cy.get('.space-y-8 > .flex > .inline-flex').click({ force: true })
+    cy.get('input[data-slot="input"]').eq(0).type('salao teste', { force: true })
+    cy.get(':nth-child(2) > .resize-none').type('salao teste', { force: true })
+    cy.get(':nth-child(1) > .space-y-4 > .grid > :nth-child(1) > .border-input').click({ force: true })
+    cy.contains('Beleza & Estética').click()
+    cy.get('input[data-slot="input"]').eq(1).type('salao teste', { force: true })
+    cy.get('input[data-slot="input"]').eq(2).type('seg-sex, 10h-18h', { force: true })
+    cy.get('input[data-slot="input"]').eq(3).type('teste', { force: true })
+    cy.get('input[data-slot="input"]').eq(4).type('corte cabelo', { force: true })
+    cy.get('input[data-slot="input"]').eq(5).type('R$ 20,00', { force: true })
+    cy.get('input[data-slot="input"]').eq(5).type('30', { force: true })
+    cy.get(':nth-child(3) > .resize-none').type('teste')
+    cy.get('.space-y-4 > .inline-flex').click()
+    cy.get('.go2072408551').contains('Serviço adicionado!')
+
+  })
+})
