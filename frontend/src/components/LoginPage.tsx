@@ -18,7 +18,7 @@ interface LoginPageProps {
 
 export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
   const { t } = useLanguage();
-  const { login } = useAuth();
+  const { login, loginEmpresa } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +34,11 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
     setError(null);
     
     try {
-      const success = await login(formData.email, formData.senha);
+      let success = await login(formData.email, formData.senha);
+
+      if (!success){
+        success = await loginEmpresa(formData.email, formData.senha);
+      }
       
       if (success) {
         toast.success('🎉 Login realizado com sucesso! Bem-vindo de volta!');
@@ -42,7 +46,7 @@ export function LoginPage({ onBack, onRegisterClick }: LoginPageProps) {
         onBack(); // Volta para a página principal
       } else {
         setError('Email ou senha inválidos');
-        toast.error('❌ Email ou senha inválidos. Tente novamente.');
+        toast.error(' Email ou senha inválidos. Tente novamente.');
       }
     } catch (err) {
       setError('Erro inesperado. Tente novamente.');

@@ -76,4 +76,14 @@ public class EmpresaService {
     public List<Empresa> findAll(){
         return empresaRepository.findAll();
     }
+
+    public Empresa findById(Long id){
+        Empresa empresa = empresaRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada"));
+        
+        // Força o carregamento dos serviços (inicializa a coleção lazy)
+        empresa.getServicos().size();
+        
+        return empresa;
+    }
 }
