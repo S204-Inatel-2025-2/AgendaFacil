@@ -5,6 +5,12 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
+ARG GOOGLET_ID
+ARG GOOGLE_SECRET
+
+ENV GOOGLE_ID=${GOOGLE_ID}
+ENV GOOGLE_SECRET=${GOOGLE_SECRET}
+
 # Etapa 2: rodar o JAR gerado
 FROM eclipse-temurin:21-jre
 WORKDIR /app
