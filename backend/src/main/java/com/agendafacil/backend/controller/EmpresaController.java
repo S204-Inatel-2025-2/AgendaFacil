@@ -7,6 +7,7 @@ import com.agendafacil.backend.model.Empresa;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +41,20 @@ public class EmpresaController {
     }
 
     @GetMapping("/{id}")
-    public Empresa buscarPorId(@PathVariable Long id) {
-    return empresaService.findById(id);
-}
+    public Map<String, Object> buscarPorId(@PathVariable Long id, @RequestHeader(value = "empresa-logada-id", required = false) Long empresaLogadaId) {
+        Empresa empresa = empresaService.findById(id);
+        boolean modoPrestador = empresaService.isEmpresaLogada(id, empresaLogadaId);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("empresa", empresa);
+        response.put("modoPrestador", modoPrestador);
+        
+        return response;
+    }
+
+    @GetMapping("/{id}/modo-prestador")
+    public boolean verificarModoPrestador(@PathVariable Long id, @RequestHeader("empresa-logada-id") Long empresaLogadaId) {
+        return empresaService.isEmpresaLogada(id, empresaLogadaId);
+    }
 
 }
