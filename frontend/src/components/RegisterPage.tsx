@@ -18,7 +18,7 @@ interface RegisterPageProps {
 
 export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
   const { t } = useLanguage();
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -458,6 +458,9 @@ export function RegisterPage({ onBack, onLoginClick }: RegisterPageProps) {
                 <Button
                   type="button"
                   variant="outline"
+                  onClick={() => {
+                    loginWithGoogle();
+                  }}
                   className="w-full h-12 border-border/50 hover:border-border hover:bg-accent/50 transition-all duration-200"
                 >
                   <Smartphone className="w-4 h-4 mr-2" />

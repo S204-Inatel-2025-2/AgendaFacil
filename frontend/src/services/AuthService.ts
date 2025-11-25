@@ -16,8 +16,9 @@ export interface User {
   id: number;
   nome_completo: string;
   email: string;
-  telefone: string;
-  senha: string;
+  telefone?: string;
+  senha?: string;
+  auth_provider?: string;
 }
 
 export interface ApiResponse<T> {
@@ -66,6 +67,24 @@ class AuthService {
       method: 'POST',
       body: JSON.stringify(userData),
     });
+  }
+
+  async checkOAuth2Status(): Promise<ApiResponse<User>> {
+    return this.request<User>('/oauth2/status', {
+      method: 'GET',
+      credentials: 'include', // Importante para enviar cookies de sessão
+    });
+  }
+
+  async getOAuth2User(): Promise<ApiResponse<User>> {
+    return this.request<User>('/oauth2/user', {
+      method: 'GET',
+      credentials: 'include',
+    });
+  }
+
+  loginWithGoogle(): void {
+    window.location.href = '/api/oauth2/authorization/google';
   }
 }
 
