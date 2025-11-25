@@ -1,22 +1,27 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../services/AuthService';
-import type { User, LoginRequest, RegisterRequest } from '../services/AuthService';
+import type { User, Empresa, LoginRequest, RegisterRequest } from '../services/AuthService';
+
+// Tipo união para representar tanto User quanto Empresa
+type AuthUser = (User & { userType: 'user' }) | (Empresa & { userType: 'empresa' });
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isEmpresa: boolean;
   login: (email: string, senha: string) => Promise<boolean>;
+  loginEmpresa: (email: string, senha: string) => Promise<boolean>;
   register: (userData: RegisterRequest) => Promise<boolean>;
   logout: () => void;
-  updateUser: (userData: Partial<User>) => void;
+  updateUser: (userData: Partial<User | Empresa>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -43,14 +48,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       if (response.data) {
-        setUser(response.data);
-        localStorage.setItem('user', JSON.stringify(response.data));
+        const userWithType = { ...response.data, userType: 'user' as const };
+        setUser(userWithType);
+        localStorage.setItem('user', JSON.stringify(userWithType));
         return true;
       }
       
       return false;
     } catch (error) {
       console.error('Erro inesperado no login:', error);
+      return false;
+    }
+  };
+
+  const loginEmpresa = async (email: string, senha: string): Promise<boolean> => {
+    try {
+      const response = await authService.loginEmpresa({ email, senha });
+      
+      if (response.error) {
+        console.error('Erro no login da empresa:', response.error);
+        return false;
+      }
+      
+      if (response.data) {
+        const empresaWithType = { ...response.data, userType: 'empresa' as const };
+        setUser(empresaWithType);
+        localStorage.setItem('user', JSON.stringify(empresaWithType));
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Erro inesperado no login da empresa:', error);
       return false;
     }
   };
@@ -65,8 +94,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       if (response.data) {
-        setUser(response.data);
-        localStorage.setItem('user', JSON.stringify(response.data));
+        const userWithType = { ...response.data, userType: 'user' as const };
+        setUser(userWithType);
+        localStorage.setItem('user', JSON.stringify(userWithType));
         return true;
       }
       
@@ -82,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('user');
   };
 
-  const updateUser = (userData: Partial<User>) => {
+  const updateUser = (userData: Partial<User | Empresa>) => {
     if (user) {
       const updatedUser = { ...user, ...userData };
       setUser(updatedUser);
@@ -94,7 +124,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isAuthenticated: !!user,
     isLoading,
+    isEmpresa: user?.userType === 'empresa',
     login,
+    loginEmpresa,
     register,
     logout,
     updateUser,

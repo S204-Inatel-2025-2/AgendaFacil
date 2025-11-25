@@ -2,6 +2,8 @@ package com.agendafacil.backend.model;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,6 +46,7 @@ public class Servico {
 
     @ManyToOne
     @JoinColumn(name = "empresa_id", nullable = false)
+    @JsonBackReference
     private Empresa empresa;
 
     public Servico(){}

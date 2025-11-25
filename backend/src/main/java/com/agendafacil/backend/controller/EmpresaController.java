@@ -39,4 +39,9 @@ public class EmpresaController {
         return empresaService.findAll();
     }
 
+    @GetMapping("/{id}")
+    public Empresa buscarPorId(@PathVariable Long id) {
+    return empresaService.findById(id);
+}
+
 }
