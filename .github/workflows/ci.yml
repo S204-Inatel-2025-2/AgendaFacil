@@ -128,6 +128,9 @@ jobs:
       # BACKEND
       - name: Build e Push do BACKEND
         run: |
+          docker build \
+            --build-arg GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_ID }} \
+            --build-arg GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_SECRET }} \
           docker build -t ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ./backend
           docker push ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA}
           docker tag ghcr.io/${GITHUB_REPOSITORY,,}/backend:${GITHUB_SHA} ghcr.io/${GITHUB_REPOSITORY,,}/backend:latest
