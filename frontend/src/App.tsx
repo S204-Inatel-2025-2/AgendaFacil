@@ -200,13 +200,21 @@ function AppContent() {
         return;
       }
 
-      // Converter empresa do backend para formato do frontend
-      const empresaBackend = response.data;
+      // ⚠ CORREÇÃO: Acessar a propriedade 'empresa' do response
+      const wrapperData = response.data as any; // Temporariamente usar any
+      const empresaBackend = wrapperData.empresa; // Pegar o objeto empresa
+      const modoPrestador = wrapperData.modoPrestador; // Se precisar usar depois
+      
+      if (!empresaBackend) {
+        toast.error('Dados da empresa não encontrados');
+        return;
+      }
+
       const empresaFormatada = {
         id: empresaBackend.id.toString(),
         name: empresaBackend.nome,
-        description: `${empresaBackend.razao_social}`,
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80', // Imagem padrão
+        description: ${empresaBackend.razao_social},
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80',
         rating: 4.8,
         reviews: 0,
         location: 'Localização não informada',
@@ -218,7 +226,7 @@ function AppContent() {
       };
 
       setSelectedCompany(empresaFormatada);
-      setCurrentServiceCategory('medical'); // Categoria padrão - você pode melhorar isso depois
+      setCurrentServiceCategory('medical');
       setCurrentPage('service-detail');
     } catch (error) {
       console.error('Erro ao carregar empresa:', error);
