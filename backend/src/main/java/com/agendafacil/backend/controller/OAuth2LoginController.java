@@ -76,4 +76,28 @@ public class OAuth2LoginController {
                 Map.of("success", false, "message", "Falha no login")
         );
     }
+
+    // Add this endpoint to check authentication status
+    @GetMapping("/status")
+    public ResponseEntity<?> getAuthStatus(@AuthenticationPrincipal OAuth2User principal) {
+        if (principal == null) {
+            return ResponseEntity.ok(Collections.singletonMap("authenticated", false));
+        }
+        
+        String email = principal.getAttribute("email");
+        User user = userService.findByEmail(email).orElse(null);
+        
+        if (user != null) {
+            Map<String, Object> userInfo = Map.of(
+                    "authenticated", true,
+                    "id", user.getId(),
+                    "name", user.getNomeCompleto(),
+                    "email", user.getEmail(),
+                    "provider", user.getAuthProvider().name()
+            );
+            return ResponseEntity.ok(userInfo);
+        }
+        
+        return ResponseEntity.ok(Collections.singletonMap("authenticated", false));
+    }
 }

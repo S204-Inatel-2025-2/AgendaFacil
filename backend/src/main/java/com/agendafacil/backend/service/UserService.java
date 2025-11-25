@@ -35,14 +35,28 @@ public class UserService {
     }
 
     public User processOAuth2User(String email, String name, String providerId, AuthProvider provider) {
-        Optional<User> userOptional = userRepository.findByEmailAndAuthProvider(email, provider);
-
+        
+        Optional<User> userOptional = userRepository.findByProviderId(providerId);
+        
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.setNomeCompleto(name);
+            
+            user.setNome_completo(name);
+            return userRepository.save(user);
+        }
+        
+        
+        userOptional = userRepository.findByEmail(email);
+        
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+           
             user.setProviderId(providerId);
+            user.setAuthProvider(provider);
+            user.setNomeCompleto(name);
             return userRepository.save(user);
         } else {
+            
             User user = User.createOAuth2User(name, email, providerId, provider);
             return userRepository.save(user);
         }
@@ -50,6 +64,10 @@ public class UserService {
 
     public Optional<User> findById(Long id){
         return userRepository.findById(id);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public List<User> findAll() {

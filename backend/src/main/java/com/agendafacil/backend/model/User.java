@@ -15,7 +15,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nomeCompleto;
+    private String nome_completo;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -29,7 +29,7 @@ public class User {
     private String providerId;
 
     public User(String nome, String email, String telefone, String senha){
-        this.nomeCompleto = nome;
+        this.nome_completo = nome;
         this.email = email;
         this.telefone = telefone;
         this.senha = senha;
@@ -38,9 +38,10 @@ public class User {
 
     public static User createOAuth2User(String name, String email, String providerId, AuthProvider provider) {
         User user = new User();
-        user.setNomeCompleto(name);
+        user.setNome_completo(name);
         user.setEmail(email);
         user.setProviderId(providerId);
+
         user.setAuthProvider(provider);
         user.setSenha(null);
         return user;

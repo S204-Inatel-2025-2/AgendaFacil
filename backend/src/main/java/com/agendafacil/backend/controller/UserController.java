@@ -17,7 +17,7 @@ public class UserController {
 
     @PostMapping("/register")
     public User register(@RequestBody UserDTO userDTO) throws Exception {
-        User user = new User(userDTO.getNomeCompleto(), userDTO.getEmail(), userDTO.getTelefone(), userDTO.getSenha());
+        User user = new User(userDTO.getNome_completo(), userDTO.getEmail(), userDTO.getTelefone(), userDTO.getSenha());
         return userService.register(user);
     }
 

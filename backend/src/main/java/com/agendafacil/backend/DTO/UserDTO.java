@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Data
 public class UserDTO {
-    private String nomeCompleto; // camelCase
+    private String nome_completo; 
     private String email;
     private String telefone;
     private String senha;
