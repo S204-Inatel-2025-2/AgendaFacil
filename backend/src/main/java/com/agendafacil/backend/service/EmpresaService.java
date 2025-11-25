@@ -87,7 +87,10 @@ public class EmpresaService {
         return empresa;
     }
 
-    public boolean isEmpresaLogada(long empresaId, Long empresaLogadaId) {
-        return empresaId != null && empresaLogadaId != null && empresaId.equals(empresaLogadaId);
+    public boolean isEmpresaLogada(Long empresaId, Long empresaLogadaId) {
+        if (empresaId == null || empresaLogadaId == null) {
+            return false;
+        }
+        return empresaId.equals(empresaLogadaId);
     }
 }

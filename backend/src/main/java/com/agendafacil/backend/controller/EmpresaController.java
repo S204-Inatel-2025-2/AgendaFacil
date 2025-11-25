@@ -7,6 +7,7 @@ import com.agendafacil.backend.model.Empresa;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,5 +57,4 @@ public class EmpresaController {
     public boolean verificarModoPrestador(@PathVariable Long id, @RequestHeader("empresa-logada-id") Long empresaLogadaId) {
         return empresaService.isEmpresaLogada(id, empresaLogadaId);
     }
-
 }
