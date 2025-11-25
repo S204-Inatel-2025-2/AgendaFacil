@@ -182,59 +182,58 @@ function AppContent() {
   // import toast from 'react-hot-toast';
 
   // FunÃ§Ã£o para buscar empresa do backend
-  const loadCompanyFromBackend = async (empresaId: string) => {
-    setIsLoading(true);
-    try {
-      const id = parseInt(empresaId);
-      if (isNaN(id)) {
-        toast.error('ID de empresa inválido');
-        return;
-      }
-
-      // Buscar empresa do backend
-      const response = await empresaService.buscarPorId(id);
-      
-      if (response.error || !response.data) {
-        toast.error('Empresa não encontrada');
-        console.error('Erro ao buscar empresa:', response.error);
-        return;
-      }
-
-      // ⚠ CORREÇÃO: Acessar a propriedade 'empresa' do response
-      const wrapperData = response.data as any; // Temporariamente usar any
-      const empresaBackend = wrapperData.empresa; // Pegar o objeto empresa
-      const modoPrestador = wrapperData.modoPrestador; // Se precisar usar depois
-      
-      if (!empresaBackend) {
-        toast.error('Dados da empresa não encontrados');
-        return;
-      }
-
-      const empresaFormatada = {
-        id: empresaBackend.id.toString(),
-        name: empresaBackend.nome,
-        description: ${empresaBackend.razao_social},
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80',
-        rating: 4.8,
-        reviews: 0,
-        location: 'Localização não informada',
-        services: ['Serviços diversos'],
-        availability: 'Consulte disponibilidade',
-        price: 'A consultar',
-        phone: empresaBackend.telefone || 'Não informado',
-        verified: true
-      };
-
-      setSelectedCompany(empresaFormatada);
-      setCurrentServiceCategory('medical');
-      setCurrentPage('service-detail');
-    } catch (error) {
-      console.error('Erro ao carregar empresa:', error);
-      toast.error('Erro ao carregar empresa');
-    } finally {
-      setIsLoading(false);
+const loadCompanyFromBackend = async (empresaId: string) => {
+  setIsLoading(true);
+  try {
+    const id = parseInt(empresaId);
+    if (isNaN(id)) {
+      toast.error('ID de empresa inválido');
+      return;
     }
-  };
+
+    // Buscar empresa do backend
+    const response = await empresaService.buscarPorId(id);
+    
+    if (response.error || !response.data) {
+      toast.error('Empresa não encontrada');
+      console.error('Erro ao buscar empresa:', response.error);
+      return;
+    }
+
+    const wrapperData = response.data as any;
+    const empresaBackend = wrapperData.empresa;
+    const modoPrestador = wrapperData.modoPrestador;
+    
+    if (!empresaBackend) {
+      toast.error('Dados da empresa não encontrados');
+      return;
+    }
+
+    const empresaFormatada = {
+      id: empresaBackend.id.toString(),
+      name: empresaBackend.nome,
+      description: empresaBackend.razao_social, 
+      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80',
+      rating: 4.8,
+      reviews: 0,
+      location: 'Localização não informada',
+      services: ['Serviços diversos'],
+      availability: 'Consulte disponibilidade',
+      price: 'A consultar',
+      phone: empresaBackend.telefone || 'Não informado',
+      verified: true
+    };
+
+    setSelectedCompany(empresaFormatada);
+    setCurrentServiceCategory('medical');
+    setCurrentPage('service-detail');
+  } catch (error) {
+    console.error('Erro ao carregar empresa:', error);
+    toast.error('Erro ao carregar empresa');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Verificar URL para acessar empresa específica
   useEffect(() => {

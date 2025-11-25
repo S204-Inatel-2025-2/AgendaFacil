@@ -10,6 +10,11 @@ export interface EmpresaDetalhada {
   telefone: string;
 }
 
+export interface EmpresaResponse {
+  empresa: EmpresaDetalhada;
+  modoPrestador: boolean;
+}
+
 export interface ApiResponse<T> {
   data?: T;
   error?: string;
@@ -44,7 +49,7 @@ class EmpresaService {
   }
 
   async buscarPorId(id: number): Promise<ApiResponse<EmpresaDetalhada>> {
-    return this.request<EmpresaDetalhada>(`/empresas/${id}`);
+    return this.request<EmpresaRespose>(`/empresas/${id}`);
   }
 
   async listarTodas(): Promise<ApiResponse<EmpresaDetalhada[]>> {
